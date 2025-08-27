@@ -1254,6 +1254,24 @@ body::before {
     box-shadow: 0 4px 12px rgba(255, 182, 193, 0.2);
 }
 
+.gift-image {
+  display: block;
+  width: 100%;
+  max-width: 400px !important;
+  height: auto !important;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+
+.gift-image {
+  width: 100%;
+  max-width: 400px !important;
+  height: 250px;       /* fixed height */
+  object-fit: cover;
+  border-radius: 12px;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .screen {
@@ -1366,4 +1384,5 @@ body::before {
     }
 
 }
+
 
