@@ -981,22 +981,69 @@ body::before {
     animation: fadeInUp 1s ease both;
 }
 
-.handwritten-note {
-    font-family: 'Dancing Script', cursive;
-    font-size: 1.8rem;
-    color: #B8860B;
-    margin-bottom: 2rem;
-    font-weight: 600;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+/* Spoiler Container - WIDER and CENTERED */
+.spoiler-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 2rem 0 3rem 0;
     animation: fadeInUp 1s ease 0.5s both;
 }
 
+.spoiler-button {
+    background: rgba(136, 136, 136, 0.3);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(2px);
+    position: relative;
+    overflow: hidden;
+    /* Make it WIDER horizontally with extra padding */
+    padding: 0.8rem 4rem;
+    min-width: 300px;
+    max-width: 500px;
+    width: 80%;
+}
+
+.spoiler-button:hover {
+    background: rgba(136, 136, 136, 0.4);
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.spoiler-text {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.4rem;
+    color: rgba(136, 136, 136, 0.8);
+    font-weight: 400;
+    display: block;
+    text-align: center;
+    filter: blur(1px);
+    transition: all 0.5s ease;
+}
+
+.spoiler-button.revealed .spoiler-text {
+    filter: blur(0);
+    color: #B8860B;
+    font-weight: 600;
+    font-size: 1.6rem;
+}
+
+.spoiler-button.revealed {
+    background: rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(180, 134, 11, 0.3);
+}
+
+/* Gift Buttons */
 .gift-buttons {
     display: flex;
     gap: 1.5rem;
     justify-content: center;
-    margin-bottom: 2.5rem;
-    animation: fadeInUp 1s ease 0.8s both;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+    animation: fadeInUp 1s ease 1s both;
 }
 
 .gift-button {
@@ -1009,30 +1056,13 @@ body::before {
     border-radius: 25px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(255, 182, 193, 0.3);
-    position: relative;
-    overflow: hidden;
-}
-
-.gift-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.5s ease;
+    box-shadow: 0 3px 10px rgba(255, 182, 193, 0.2);
 }
 
 .gift-button:hover {
     transform: translateY(-2px) scale(1.05);
-    box-shadow: 0 8px 25px rgba(255, 182, 193, 0.4);
+    box-shadow: 0 6px 20px rgba(255, 182, 193, 0.3);
     border-color: #FFD700;
-}
-
-.gift-button:hover::before {
-    left: 100%;
 }
 
 .gift-button:active {
@@ -1045,7 +1075,18 @@ body::before {
     font-style: italic;
     line-height: 1.4;
     opacity: 0.8;
-    animation: fadeInUp 1s ease 1s both;
+    animation: fadeInUp 1s ease 1.5s both;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Gift Screens */
@@ -1065,14 +1106,14 @@ body::before {
 .gift-content {
     max-width: 800px;
     margin: 0 auto;
+    width: 100%;
 }
 
 .gift-title {
     font-size: 2rem;
     color: #5D4E37;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
     font-weight: 600;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 /* Image Gallery */
@@ -1087,121 +1128,111 @@ body::before {
 .image-placeholder {
     width: 300px;
     height: 200px;
-    background: linear-gradient(135deg, rgba(255, 182, 193, 0.2) 0%, rgba(255, 192, 203, 0.1) 100%);
     border: 2px dashed #F4A460;
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
+    background: rgba(255, 182, 193, 0.1);
     transition: all 0.3s ease;
 }
 
 .image-placeholder:hover {
-    background: linear-gradient(135deg, rgba(255, 182, 193, 0.3) 0%, rgba(255, 192, 203, 0.2) 100%);
     border-color: #FFD700;
+    background: rgba(255, 182, 193, 0.15);
+    transform: scale(1.02);
 }
 
-.placeholder-content p {
-    color: #5D4E37;
-    font-size: 1rem;
-    font-weight: 500;
+.placeholder-content {
     text-align: center;
+    padding: 1rem;
+}
+
+.placeholder-text {
+    color: #B8860B;
+    font-size: 1.1rem;
+    font-weight: 500;
+    font-style: italic;
 }
 
 /* Voucher Card */
 .voucher-card {
-    background: linear-gradient(135deg, #FFF8DC 0%, #F5F5DC 100%);
+    background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 100%);
     border: 2px solid #F4A460;
-    border-radius: 15px;
-    max-width: 400px;
-    margin: 0 auto 3rem;
-    box-shadow: 0 8px 25px rgba(255, 182, 193, 0.3);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 8px 30px rgba(255, 182, 193, 0.3);
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
     overflow: hidden;
 }
 
-.voucher-header {
-    background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 100%);
-    padding: 1.5rem;
-    border-bottom: 2px solid #F4A460;
+.voucher-card::before {
+    content: '🎁';
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-size: 3rem;
+    opacity: 0.2;
+    transform: rotate(15deg);
 }
 
-.voucher-header h3 {
-    color: #5D4E37;
+.voucher-header {
     font-size: 1.5rem;
     font-weight: 600;
-    margin: 0;
+    color: #5D4E37;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .voucher-body {
-    padding: 2rem 1.5rem;
+    color: #5D4E37;
 }
 
 .voucher-label {
-    color: #5D4E37;
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-size: 1rem;
     margin-bottom: 0.5rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    opacity: 0.8;
 }
 
 .voucher-code {
-    color: #B8860B;
-    font-size: 1.5rem;
-    font-weight: 700;
-    font-family: 'Courier New', monospace;
-    background: rgba(255, 215, 0, 0.1);
-    padding: 0.8rem;
+    font-family: 'Inter', monospace;
+    font-size: 1.3rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.3);
+    padding: 0.8rem 1.2rem;
     border-radius: 8px;
-    border: 1px dashed #F4A460;
+    border: 1px solid rgba(255, 255, 255, 0.5);
     margin-bottom: 1rem;
+    letter-spacing: 1px;
 }
 
-.voucher-footer {
-    background: rgba(244, 164, 96, 0.1);
-    padding: 1rem 1.5rem;
-    border-top: 1px solid rgba(244, 164, 96, 0.3);
-}
-
-.voucher-footer p {
-    color: #5D4E37;
+.voucher-note {
     font-size: 0.9rem;
+    opacity: 0.7;
     font-style: italic;
-    margin: 0;
 }
 
 /* Back Button */
 .back-button {
-    background: rgba(244, 164, 96, 0.2);
-    border: 2px solid #F4A460;
+    background: rgba(255, 182, 193, 0.3);
+    border: 1px solid #F4A460;
     color: #5D4E37;
     font-size: 1rem;
     font-weight: 500;
     padding: 0.8rem 1.5rem;
-    border-radius: 25px;
+    border-radius: 20px;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .back-button:hover {
-    background: rgba(244, 164, 96, 0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(244, 164, 96, 0.3);
-}
-
-.back-button:active {
-    transform: translateY(0);
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    background: rgba(255, 182, 193, 0.5);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 182, 193, 0.2);
 }
 
 /* Responsive Design */
@@ -1225,9 +1256,18 @@ body::before {
         margin-bottom: 2rem;
     }
     
-    .handwritten-note {
-        font-size: 1.6rem;
-        margin-bottom: 2rem;
+    .spoiler-button {
+        min-width: 250px;
+        width: 90%;
+        padding: 0.7rem 3rem;
+    }
+    
+    .spoiler-text {
+        font-size: 1.2rem;
+    }
+    
+    .spoiler-button.revealed .spoiler-text {
+        font-size: 1.4rem;
     }
     
     .gift-buttons {
@@ -1238,6 +1278,10 @@ body::before {
     
     .gift-button {
         width: 200px;
+    }
+    
+    .gift-title {
+        font-size: 1.6rem;
     }
     
     .image-gallery {
@@ -1251,8 +1295,8 @@ body::before {
         height: 180px;
     }
     
-    .gift-title {
-        font-size: 1.6rem;
+    .voucher-card {
+        padding: 1.5rem;
     }
 }
 
@@ -1265,13 +1309,27 @@ body::before {
         font-size: 1.2rem;
     }
     
-    .handwritten-note {
-        font-size: 1.5rem;
+    .spoiler-button {
+        min-width: 200px;
+        width: 95%;
+        padding: 0.6rem 2rem;
+    }
+    
+    .spoiler-text {
+        font-size: 1.1rem;
+    }
+    
+    .spoiler-button.revealed .spoiler-text {
+        font-size: 1.3rem;
     }
     
     .tap-button {
         font-size: 1rem;
         padding: 0.8rem 1.8rem;
+    }
+    
+    .gift-title {
+        font-size: 1.4rem;
     }
     
     .image-placeholder {
@@ -1280,11 +1338,11 @@ body::before {
     }
     
     .voucher-card {
-        margin-left: 1rem;
-        margin-right: 1rem;
+        padding: 1.2rem;
     }
     
-    .gift-title {
-        font-size: 1.4rem;
+    .voucher-code {
+        font-size: 1.1rem;
+        padding: 0.6rem 1rem;
     }
 }

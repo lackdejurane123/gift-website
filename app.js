@@ -3,7 +3,8 @@ const appData = {
   "welcomeText": "Hey… 👋\nSo, you're finally back huh? 👀✨\nThought I'd make you something small.",
   "buttonText": "Tap Me 🌿",
   "surpriseMainText": "I hope today was kind to you,\nand I hope you're smiling right now. 🌸\nThat's it… no big reason,\njust me being me.",
-  "handwrittenNote": "P.S. I still like you, btw.",
+  "spoilerHiddenText": "do not click",
+  "spoilerRevealedText": "P.S. I still like you, btw.",
   "footerText": "You can close this now, I just wanted to be here when you got back :)",
   "gift1Title": "A little something for you 📸",
   "gift2Title": "Your Gift Voucher 🎁",
@@ -217,7 +218,7 @@ class HeartfeltApp {
   constructor() {
     this.petalsManager = new PetalsManager();
     this.isTransitioning = false;
-    this.currentScreen = 'welcome';
+    this.spoilerRevealed = false;
     
     this.init();
   }
@@ -244,18 +245,16 @@ class HeartfeltApp {
     const initAudioOnce = () => {
       initAudio();
       document.removeEventListener('click', initAudioOnce);
-      document.removeEventListener('touchstart', initAudioOnce);
     };
     document.addEventListener('click', initAudioOnce);
-    document.addEventListener('touchstart', initAudioOnce);
   }
   
   loadContent() {
     const elements = {
       'welcomeText': appData.welcomeText,
       'surpriseMainText': appData.surpriseMainText,
-      'handwrittenNote': appData.handwrittenNote,
-      'footerText': appData.footerText
+      'footerText': appData.footerText,
+      'voucherCode': appData.voucherCode
     };
     
     Object.keys(elements).forEach(id => {
@@ -264,26 +263,30 @@ class HeartfeltApp {
         element.textContent = elements[id];
       }
     });
+    
+    // Set spoiler text
+    const spoilerText = document.getElementById('spoilerText');
+    if (spoilerText) {
+      spoilerText.textContent = appData.spoilerHiddenText;
+    }
   }
   
   bindEvents() {
-    // Main tap button
     const tapButton = document.getElementById('tapButton');
     if (tapButton) {
       tapButton.addEventListener('click', (e) => {
         e.preventDefault();
-        e.stopPropagation();
-        if (!this.isTransitioning) {
-          this.handleTransition('welcome', 'surprise');
-        }
+        console.log('Tap button clicked!'); // Debug log
+        this.handleTransition();
       });
-      
-      tapButton.addEventListener('touchend', (e) => {
+    }
+    
+    // Spoiler button
+    const spoilerButton = document.getElementById('spoilerButton');
+    if (spoilerButton) {
+      spoilerButton.addEventListener('click', (e) => {
         e.preventDefault();
-        e.stopPropagation();
-        if (!this.isTransitioning) {
-          this.handleTransition('welcome', 'surprise');
-        }
+        this.handleSpoilerReveal();
       });
     }
     
@@ -294,182 +297,226 @@ class HeartfeltApp {
     if (gift1Button) {
       gift1Button.addEventListener('click', (e) => {
         e.preventDefault();
-        e.stopPropagation();
-        if (!this.isTransitioning) {
-          this.handleTransition('surprise', 'gift1');
-        }
-      });
-      
-      gift1Button.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (!this.isTransitioning) {
-          this.handleTransition('surprise', 'gift1');
-        }
+        this.showGiftScreen('gift1');
       });
     }
     
     if (gift2Button) {
       gift2Button.addEventListener('click', (e) => {
         e.preventDefault();
-        e.stopPropagation();
-        if (!this.isTransitioning) {
-          this.handleTransition('surprise', 'gift2');
-        }
-      });
-      
-      gift2Button.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (!this.isTransitioning) {
-          this.handleTransition('surprise', 'gift2');
-        }
+        this.showGiftScreen('gift2');
       });
     }
     
     // Back buttons
-    const gift1BackButton = document.getElementById('gift1BackButton');
-    const gift2BackButton = document.getElementById('gift2BackButton');
+    const backFromGift1 = document.getElementById('backFromGift1');
+    const backFromGift2 = document.getElementById('backFromGift2');
     
-    if (gift1BackButton) {
-      gift1BackButton.addEventListener('click', (e) => {
+    if (backFromGift1) {
+      backFromGift1.addEventListener('click', (e) => {
         e.preventDefault();
-        e.stopPropagation();
-        if (!this.isTransitioning) {
-          this.handleTransition('gift1', 'surprise');
-        }
-      });
-      
-      gift1BackButton.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (!this.isTransitioning) {
-          this.handleTransition('gift1', 'surprise');
-        }
+        this.showSurpriseScreen();
       });
     }
     
-    if (gift2BackButton) {
-      gift2BackButton.addEventListener('click', (e) => {
+    if (backFromGift2) {
+      backFromGift2.addEventListener('click', (e) => {
         e.preventDefault();
-        e.stopPropagation();
-        if (!this.isTransitioning) {
-          this.handleTransition('gift2', 'surprise');
-        }
-      });
-      
-      gift2BackButton.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (!this.isTransitioning) {
-          this.handleTransition('gift2', 'surprise');
-        }
+        this.showSurpriseScreen();
       });
     }
     
     // Add keyboard support
     document.addEventListener('keydown', (e) => {
       if ((e.key === 'Enter' || e.key === ' ') && !this.isTransitioning) {
-        if (this.currentScreen === 'welcome') {
+        const surpriseScreen = document.getElementById('surpriseScreen');
+        if (surpriseScreen && !surpriseScreen.classList.contains('visible')) {
           e.preventDefault();
-          this.handleTransition('welcome', 'surprise');
-        }
-      }
-      
-      // ESC to go back
-      if (e.key === 'Escape' && !this.isTransitioning) {
-        if (this.currentScreen === 'gift1' || this.currentScreen === 'gift2') {
-          e.preventDefault();
-          this.handleTransition(this.currentScreen, 'surprise');
+          this.handleTransition();
         }
       }
     });
   }
   
-  async handleTransition(fromScreen, toScreen) {
+  async handleTransition() {
     if (this.isTransitioning) return;
     
-    console.log(`Transitioning from ${fromScreen} to ${toScreen}...`);
+    console.log('Starting transition...'); // Debug log
     this.isTransitioning = true;
     
-    const fromElement = document.getElementById(fromScreen + 'Screen');
-    const toElement = document.getElementById(toScreen + 'Screen');
+    const welcomeScreen = document.getElementById('welcomeScreen');
+    const surpriseScreen = document.getElementById('surpriseScreen');
+    const tapButton = document.getElementById('tapButton');
     
-    if (!fromElement || !toElement) {
+    if (!welcomeScreen || !surpriseScreen) {
       console.error('Screen elements not found');
       this.isTransitioning = false;
       return;
     }
     
-    // Special handling for initial welcome -> surprise transition
-    if (fromScreen === 'welcome' && toScreen === 'surprise') {
-      const tapButton = document.getElementById('tapButton');
-      if (tapButton) {
-        tapButton.disabled = true;
-        tapButton.style.cursor = 'default';
-      }
-      
-      // Play chime sound
-      playChime();
-      
-      // Make petals intense
-      this.petalsManager.makeIntense();
-      
-      // Fade out welcome screen
-      fromElement.style.transition = 'opacity 0.8s ease-in-out, transform 0.8s ease-in-out';
-      fromElement.style.opacity = '0';
-      fromElement.style.transform = 'translateY(-20px)';
-      
-      // Wait for fade out
-      await this.sleep(800);
-      
-      // Hide welcome, show surprise
-      fromElement.classList.add('hidden');
-      fromElement.style.display = 'none';
-      toElement.classList.remove('hidden');
-      toElement.style.display = 'flex';
-      
-      // Small delay then make surprise visible
-      await this.sleep(50);
-      
-      // Show surprise screen with animation
-      toElement.style.opacity = '1';
-      toElement.style.transform = 'translateY(0)';
-      toElement.classList.add('visible');
-      
-      // Start background music after a moment
-      setTimeout(() => {
-        startBackgroundMusic();
-      }, 1500);
-    } else {
-      // Regular transitions between other screens
-      // Fade out current screen
-      if (fromElement.classList.contains('visible')) {
-        fromElement.classList.remove('visible');
-      }
-      fromElement.style.opacity = '0';
-      fromElement.style.transform = 'translateY(20px)';
-      
-      // Wait for fade out
-      await this.sleep(300);
-      
-      // Hide current, show new
-      fromElement.classList.add('hidden');
-      fromElement.style.display = 'none';
-      toElement.classList.remove('hidden');
-      toElement.style.display = 'flex';
-      
-      // Small delay then make new screen visible
-      await this.sleep(50);
-      
-      // Show new screen with animation
-      toElement.style.opacity = '1';
-      toElement.style.transform = 'translateY(0)';
-      toElement.classList.add('visible');
+    console.log('Elements found, proceeding with transition'); // Debug log
+    
+    // Disable button
+    if (tapButton) {
+      tapButton.disabled = true;
+      tapButton.style.cursor = 'default';
     }
     
-    this.currentScreen = toScreen;
-    console.log(`Transition to ${toScreen} completed`);
+    // Play chime sound
+    playChime();
+    
+    // Make petals intense
+    this.petalsManager.makeIntense();
+    
+    // Fade out welcome screen
+    welcomeScreen.style.transition = 'opacity 0.8s ease-in-out, transform 0.8s ease-in-out';
+    welcomeScreen.style.opacity = '0';
+    welcomeScreen.style.transform = 'translateY(-20px)';
+    
+    // Wait for fade out
+    await this.sleep(800);
+    
+    // Hide welcome screen
+    welcomeScreen.style.display = 'none';
+    
+    // Show and animate surprise screen
+    surpriseScreen.style.display = 'flex';
+    surpriseScreen.classList.remove('hidden');
+    
+    // Force reflow
+    surpriseScreen.offsetHeight;
+    
+    // Animate in
+    surpriseScreen.style.opacity = '1';
+    surpriseScreen.style.transform = 'translateY(0)';
+    surpriseScreen.classList.add('visible');
+    
+    console.log('Transition completed'); // Debug log
+    
+    // Start background music after a moment
+    setTimeout(() => {
+      startBackgroundMusic();
+    }, 1500);
+    
+    this.isTransitioning = false;
+  }
+  
+  handleSpoilerReveal() {
+    if (this.spoilerRevealed) return;
+    
+    console.log('Spoiler reveal triggered'); // Debug log
+    
+    const spoilerButton = document.getElementById('spoilerButton');
+    const spoilerText = document.getElementById('spoilerText');
+    
+    if (!spoilerButton || !spoilerText) return;
+    
+    this.spoilerRevealed = true;
+    
+    // Add revealed class for styling
+    spoilerButton.classList.add('revealed');
+    
+    // Change the text with animation
+    spoilerText.style.transition = 'opacity 0.3s ease';
+    spoilerText.style.opacity = '0';
+    
+    setTimeout(() => {
+      spoilerText.textContent = appData.spoilerRevealedText;
+      spoilerText.style.opacity = '1';
+    }, 300);
+    
+    // Disable further clicks
+    spoilerButton.style.cursor = 'default';
+    spoilerButton.disabled = true;
+  }
+  
+  async showGiftScreen(giftType) {
+    if (this.isTransitioning) return;
+    this.isTransitioning = true;
+    
+    console.log('Showing gift screen:', giftType); // Debug log
+    
+    const surpriseScreen = document.getElementById('surpriseScreen');
+    const giftScreen = document.getElementById(giftType + 'Screen');
+    
+    if (!surpriseScreen || !giftScreen) {
+      console.error('Gift screen elements not found');
+      this.isTransitioning = false;
+      return;
+    }
+    
+    // Fade out surprise screen
+    surpriseScreen.style.transition = 'opacity 0.4s ease-in-out, transform 0.4s ease-in-out';
+    surpriseScreen.style.opacity = '0';
+    surpriseScreen.style.transform = 'translateY(-20px)';
+    
+    await this.sleep(400);
+    
+    // Hide surprise screen
+    surpriseScreen.style.display = 'none';
+    surpriseScreen.classList.remove('visible');
+    
+    // Show gift screen
+    giftScreen.style.display = 'flex';
+    giftScreen.classList.remove('hidden');
+    
+    // Force reflow
+    giftScreen.offsetHeight;
+    
+    // Animate in
+    giftScreen.style.opacity = '1';
+    giftScreen.style.transform = 'translateY(0)';
+    giftScreen.classList.add('visible');
+    
+    this.isTransitioning = false;
+  }
+  
+  async showSurpriseScreen() {
+    if (this.isTransitioning) return;
+    this.isTransitioning = true;
+    
+    console.log('Returning to surprise screen'); // Debug log
+    
+    const surpriseScreen = document.getElementById('surpriseScreen');
+    const gift1Screen = document.getElementById('gift1Screen');
+    const gift2Screen = document.getElementById('gift2Screen');
+    
+    // Find the currently visible gift screen
+    let currentGiftScreen = null;
+    if (gift1Screen && gift1Screen.classList.contains('visible')) {
+      currentGiftScreen = gift1Screen;
+    } else if (gift2Screen && gift2Screen.classList.contains('visible')) {
+      currentGiftScreen = gift2Screen;
+    }
+    
+    if (!currentGiftScreen || !surpriseScreen) {
+      console.error('Screen elements not found for return navigation');
+      this.isTransitioning = false;
+      return;
+    }
+    
+    // Fade out current gift screen
+    currentGiftScreen.style.transition = 'opacity 0.4s ease-in-out, transform 0.4s ease-in-out';
+    currentGiftScreen.style.opacity = '0';
+    currentGiftScreen.style.transform = 'translateY(-20px)';
+    
+    await this.sleep(400);
+    
+    // Hide gift screen
+    currentGiftScreen.style.display = 'none';
+    currentGiftScreen.classList.remove('visible');
+    
+    // Show surprise screen
+    surpriseScreen.style.display = 'flex';
+    surpriseScreen.classList.remove('hidden');
+    
+    // Force reflow
+    surpriseScreen.offsetHeight;
+    
+    // Animate in
+    surpriseScreen.style.opacity = '1';
+    surpriseScreen.style.transform = 'translateY(0)';
+    surpriseScreen.classList.add('visible');
     
     this.isTransitioning = false;
   }
