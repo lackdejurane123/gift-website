@@ -6,7 +6,7 @@ const appData = {
   "spoilerHiddenText": "Click at your own risk",
   "spoilerRevealedText": "I still like you, btw.",
   "footerText": "You can close this now, I just wanted to be here when you got back, maybe check the gifts? ;)",
-  "gift1Title": "A little something for you 📸",
+  "gift1Title": "Flowers for the day! 💐",
   "gift2Title": "This is a code you can avail to get 2 months of YouTube Premium. 🎁",
   "voucherCode": "0pi5xe38zxyd5",
   "imagePlaceholder1": " ",
