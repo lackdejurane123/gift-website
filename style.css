@@ -1124,15 +1124,16 @@ body::before {
     margin-bottom: 3rem;
     flex-wrap: wrap;
 }
-
+/* Constrain gallery photos */
 .gift-image {
   display: block;
   width: 100%;
-  max-width: 400px;    /* or whatever max width you prefer */
+  max-width: 400px;
   height: auto;
-  object-fit: cover;   /* ensures the image fills the box without stretching */
-  border-radius: 12px; /* optional rounding to match your design */
+  object-fit: cover;
+  border-radius: 12px;
 }
+
 
 .gift-image {
   width: 100%;
@@ -1365,3 +1366,4 @@ body::before {
     }
 
 }
+
