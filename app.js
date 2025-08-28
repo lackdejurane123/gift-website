@@ -1,16 +1,13 @@
 // Application data
 const appData = {
-  "welcomeText": "Hey princess, \nBack to the flat after a real busy and tiring day? 👀✨\nThought I'd make you something small.",
-  "buttonText": "Tap Me 🌿",
-  "surpriseMainText": "I hope today was kind to you,\nand I hope you're smiling right now. 🌸\nThat's it… no big reason,\njust me being chutiya.",
-  "spoilerHiddenText": "Click at your own risk",
-  "spoilerRevealedText": "I still like you, btw.",
-  "footerText": "You can close this now, I just wanted to be here when you got back, maybe check the gifts? ;)",
+  "welcomeText": "Hey Sandhya, \nI am very sorry for whatever I have done today. \nI had no idea I was being this draining to you. \n I am so sorry.",
+  "buttonText": "Can I fix this?",
+  "surpriseMainText": "I’m sorry. \nFor leaning too much,\nfor pressing my need \nagainst the space you deserved. \nI forgot you had your own skies \nwhile I held only my longing. \nI’m sorry. \nAnd I hope, one day, \nI can love without tethering  \nyour freedom to my fear.",
+  "spoilerHiddenText": "I am so sorry. I really don't want to hurt you",
+  "spoilerRevealedText": "I really really love you, I do not want to mess anything up. I am so sorry. I will always be there for you, regardless of what your decision will be. I know this is just a delayed rejection that I can not do anything about, but what else can I do? I am crazy about you.",
+  "footerText": "I promise again that I will live happily. But I don't know if that will be possible if I ever lose you. That will be the end of my miserable life. I am sorry again for whatever I've done.",
   "gift1Title": "Flowers for the day! 💐",
-  "gift2Title": "This is a code you can avail to get 2 months of YouTube Premium. 🎁",
   "voucherCode": "0pi5xe38zxyd5",
-  "imagePlaceholder1": " ",
-  "imagePlaceholder2": " ",
   "colors": {
     "beige": "#F5F5DC",
     "pastelPink": "#FFB6C1",
@@ -219,7 +216,6 @@ class HeartfeltApp {
     this.petalsManager = new PetalsManager();
     this.isTransitioning = false;
     this.spoilerRevealed = false;
-    
     this.init();
   }
   
@@ -276,7 +272,6 @@ class HeartfeltApp {
     if (tapButton) {
       tapButton.addEventListener('click', (e) => {
         e.preventDefault();
-        console.log('Tap button clicked!'); // Debug log
         this.handleTransition();
       });
     }
@@ -290,37 +285,19 @@ class HeartfeltApp {
       });
     }
     
-    // Gift buttons
-    const gift1Button = document.getElementById('gift1Button');
-    const gift2Button = document.getElementById('gift2Button');
-    
-    if (gift1Button) {
-      gift1Button.addEventListener('click', (e) => {
+    // Single Gift button
+    const giftButton = document.getElementById('giftButton');
+    if (giftButton) {
+      giftButton.addEventListener('click', (e) => {
         e.preventDefault();
         this.showGiftScreen('gift1');
       });
     }
     
-    if (gift2Button) {
-      gift2Button.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.showGiftScreen('gift2');
-      });
-    }
-    
-    // Back buttons
+    // Back from Gift
     const backFromGift1 = document.getElementById('backFromGift1');
-    const backFromGift2 = document.getElementById('backFromGift2');
-    
     if (backFromGift1) {
       backFromGift1.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.showSurpriseScreen();
-      });
-    }
-    
-    if (backFromGift2) {
-      backFromGift2.addEventListener('click', (e) => {
         e.preventDefault();
         this.showSurpriseScreen();
       });
@@ -479,18 +456,14 @@ class HeartfeltApp {
     
     const surpriseScreen = document.getElementById('surpriseScreen');
     const gift1Screen = document.getElementById('gift1Screen');
-    const gift2Screen = document.getElementById('gift2Screen');
     
     // Find the currently visible gift screen
     let currentGiftScreen = null;
     if (gift1Screen && gift1Screen.classList.contains('visible')) {
       currentGiftScreen = gift1Screen;
-    } else if (gift2Screen && gift2Screen.classList.contains('visible')) {
-      currentGiftScreen = gift2Screen;
     }
     
     if (!currentGiftScreen || !surpriseScreen) {
-      console.error('Screen elements not found for return navigation');
       this.isTransitioning = false;
       return;
     }
@@ -499,7 +472,7 @@ class HeartfeltApp {
     currentGiftScreen.style.transition = 'opacity 0.4s ease-in-out, transform 0.4s ease-in-out';
     currentGiftScreen.style.opacity = '0';
     currentGiftScreen.style.transform = 'translateY(-20px)';
-    
+
     await this.sleep(400);
     
     // Hide gift screen
