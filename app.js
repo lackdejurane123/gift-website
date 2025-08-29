@@ -1,12 +1,12 @@
 // Application data
 const appData = {
-  "welcomeText": "Hey Sandhya, \nI am very sorry for whatever I have done today. \nI had no idea I was being this draining to you. \n I am so sorry.",
-  "buttonText": "Can I fix this?",
-  "surpriseMainText": "I’m sorry. \nFor leaning too much,\nfor pressing my need \nagainst the space you deserved. \nI forgot you had your own skies \nwhile I held only my longing. \nI’m sorry. \nAnd I hope, one day, \nI can love without tethering  \nyour freedom to my fear.",
-  "spoilerHiddenText": "I am so sorry. I really don't want to hurt you",
-  "spoilerRevealedText": "I really really love you, I do not want to mess anything up. I am so sorry. I will always be there for you, regardless of what your decision will be. I know this is just a delayed rejection that I can not do anything about, but what else can I do? I am crazy about you.",
-  "footerText": "I promise again that I will live happily. But I don't know if that will be possible if I ever lose you. That will be the end of my miserable life. I am sorry again for whatever I've done.",
-  "gift1Title": "Flowers for the day! 💐",
+  "welcomeText": "SANDHYAAAAAAAA!!!!!! ",
+  "buttonText": "Tap tap tap!! ",
+  "surpriseMainText": "somewhere between the hush of morning leaves \nand the quiet hum of your name \ni find myself \ncarving little spaces in time \njust to keep you safe. \n not to hold you, not to fix you, \njust.. to love you\n the way sunlight loves a windowpane\n without asking to be let in.",
+  "spoilerHiddenText": "Nothing of a spoiler here, just facts?",
+  "spoilerRevealedText": "I love you. I love you very veryyy much!! (both platonically and romantically) <3 <3 <3",
+  "footerText": "",
+  "gift1Title": "I couldn't find more unique flowers today :( 💐",
   "voucherCode": "0pi5xe38zxyd5",
   "colors": {
     "beige": "#F5F5DC",
