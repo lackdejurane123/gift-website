@@ -1,12 +1,12 @@
 // Application data
 const appData = {
-  "welcomeText": "ନୂଆ ଖାଇ ଜୁହାର?",
-  "buttonText": "same things, everyday😝 ",
-  "surpriseMainText": "Can I hold your hands, Sandhya?\n \nSmall, soft, warm little things,\nwhere every fingertip feels like\na secret the world forgot to keep.\n \nYour palms, \nare small enough to disappear \ninside mine,\n yet somehow big enough\n to hold my entire heart.",
-  "spoilerHiddenText": "please hold my hand one day? too much to ask isn't it?",
-  "spoilerRevealedText": "I do wonder why I am like this. I am weird. I know. I can't help myself. I love you, Sandhya.",
-  "footerText": "Weird how I keep updating this website thingy everyday, idk if you appreciate this or not, but I think this is worth it. You are worth it. ",
-  "gift1Title": "NEW FLOWERS TODAY TOOOO!!💐",
+  "welcomeText": "I wish I could help you in any other way.",
+  "buttonText": "well the regular here. ",
+  "surpriseMainText": "rain outside my window,\n quiet in my chest, \nsome days feel heavier,\ni hope you get some rest \n \n I will still love you like everyday :)",
+  "spoilerHiddenText": "I know whatever you are going through is..hard. I am trying too.",
+  "spoilerRevealedText": "No matter what, I still love you. I will stay.",
+  "footerText": "You are worth it. ",
+  "gift1Title": "Flowers for you!! 💐",
   "voucherCode": "0pi5xe38zxyd5",
   "colors": {
     "beige": "#F5F5DC",
