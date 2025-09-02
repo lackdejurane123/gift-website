@@ -1,11 +1,11 @@
 // Application data
 const appData = {
-  "welcomeText": "I wish I could help you in any other way.",
-  "buttonText": "well the regular here. ",
-  "surpriseMainText": "rain outside my window,\n quiet in my chest, \nsome days feel heavier,\ni hope you get some rest \n \n I will still love you like everyday :)",
-  "spoilerHiddenText": "I know whatever you are going through is..hard. I am trying too.",
-  "spoilerRevealedText": "No matter what, I still love you. I will stay.",
-  "footerText": "You are worth it. ",
+  "welcomeText": "I wish I was there. I know you need this time and space thing. I know. But still.",
+  "buttonText": "you know what this is, I'll change the website sometime. ",
+  "surpriseMainText": "sometimes, \n the sky doesn't listen when we ask for sun \nthe clouds linger,\nheavy and unkind,\nand we wait,\nquietly,\nbeneath their weight. \ni won’t ask you to smile,\nor chase the storm away, \ni’ll just sit here,\nwith a handful of flowers,\nuntil the rain\nlearns to leave\n on its own.",
+  "spoilerHiddenText": "I hope you get over the stuff you don't talk about soon.",
+  "spoilerRevealedText": "I still love you. I love you. I love you.",
+  "footerText": "It's gonna be all fine. Take care.",
   "gift1Title": "Flowers for you!! 💐",
   "voucherCode": "0pi5xe38zxyd5",
   "colors": {
