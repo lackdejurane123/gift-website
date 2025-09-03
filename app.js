@@ -1,11 +1,11 @@
 // Application data
 const appData = {
-  "welcomeText": "I wish I was there. I know you need this time and space thing. I know. But still.",
-  "buttonText": "you know what this is, I'll change the website sometime. ",
-  "surpriseMainText": "sometimes, \n the sky doesn't listen when we ask for sun \nthe clouds linger,\nheavy and unkind,\nand we wait,\nquietly,\nbeneath their weight. \ni won’t ask you to smile,\nor chase the storm away, \ni’ll just sit here,\nwith a handful of flowers,\nuntil the rain\nlearns to leave\n on its own.",
-  "spoilerHiddenText": "I hope you get over the stuff you don't talk about soon.",
-  "spoilerRevealedText": "I still love you. I love you. I love you.",
-  "footerText": "It's gonna be all fine. Take care.",
+  "welcomeText": "Hey Sandhya, I know you have been distant lately, but well, it is for your own peace, right? I hope you get over whatever bothers you soon. A selfish request that is.",
+  "buttonText": "The regular as you know it",
+  "surpriseMainText": "Some days feel heavy, \n but I still find myself \nthinking of the way \nyou held onto my shirt,\n like the world could fall apart \nand you'd still keep me close.\n \n I don’t need the words,\n just knowing you are here\n is enough for me to breathe.",
+  "spoilerHiddenText": "You will get over it!! YOU GO GURLLL!",
+  "spoilerRevealedText": "I still love you. I will always love you. I love you.",
+  "footerText": "https://open.spotify.com/playlist/37i9dQZF1EJHp33IJjMMho?si=lOx0cXopT-iDGUiB8t_eYQ , I listen to this to sleep. It may not be great but i like it.",
   "gift1Title": "Flowers for you!! 💐",
   "voucherCode": "0pi5xe38zxyd5",
   "colors": {
