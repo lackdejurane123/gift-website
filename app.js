@@ -1,12 +1,12 @@
 // Application data
 const appData = {
-  "welcomeText": "Hey Sandhya, I know you have been distant lately, but well, it is for your own peace, right? I hope you get over whatever bothers you soon. A selfish request that is.",
-  "buttonText": "The regular as you know it",
-  "surpriseMainText": "Some days feel heavy, \n but I still find myself \nthinking of the way \nyou held onto my shirt,\n like the world could fall apart \nand you'd still keep me close.\n \n I don’t need the words,\n just knowing you are here\n is enough for me to breathe.",
-  "spoilerHiddenText": "You will get over it!! YOU GO GURLLL!",
-  "spoilerRevealedText": "I still love you. I will always love you. I love you.",
-  "footerText": "https://open.spotify.com/playlist/37i9dQZF1EJHp33IJjMMho?si=lOx0cXopT-iDGUiB8t_eYQ , I listen to this to sleep. It may not be great but i like it.",
-  "gift1Title": "Flowers for you!! 💐",
+  "welcomeText": "It's alright. The present will past. (THIS IS A PUNNN)",
+  "buttonText": "I swear I will update the interface soon.",
+  "surpriseMainText": "Your hair brushes my lips in memory,\nI feel you close, even from afar.\nI miss the quiet of you beside me,\nThe way you linger in everything I do.\nEven in the smallest moments,\nI find myself wishing you were here.",
+  "spoilerHiddenText": "I miss you too.",
+  "spoilerRevealedText": "I love you beyond the edges of thought and time.",
+  "footerText": "https://open.spotify.com/playlist/37i9dQZF1EJHp33IJjMMho?si=lOx0cXopT-iDGUiB8t_eYQ , best blend there is bro, 99% match.",
+  "gift1Title": "Some flowers for you 💐",
   "voucherCode": "0pi5xe38zxyd5",
   "colors": {
     "beige": "#F5F5DC",
