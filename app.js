@@ -1,596 +1,356 @@
-// Application data
-const appData = {
-  "welcomeText": "It's alright. The present will past. (THIS IS A PUNNN)",
-  "buttonText": "I swear I will update the interface soon.",
-  "surpriseMainText": "Your hair brushes my lips in memory,\nI feel you close, even from afar.\nI miss the quiet of you beside me,\nThe way you linger in everything I do.\nEven in the smallest moments,\nI find myself wishing you were here.",
-  "spoilerHiddenText": "I miss you too.",
-  "spoilerRevealedText": "I love you beyond the edges of thought and time.",
-  "footerText": "https://open.spotify.com/playlist/37i9dQZF1EJHp33IJjMMho?si=lOx0cXopT-iDGUiB8t_eYQ , best blend there is bro, 99% match.",
-  "gift1Title": "Some flowers for you 💐",
-  "voucherCode": "0pi5xe38zxyd5",
-  "colors": {
-    "beige": "#F5F5DC",
-    "pastelPink": "#FFB6C1",
-    "lightPink": "#FFC0CB",
-    "gold": "#FFD700",
-    "softGold": "#F4A460",
-    "lightGrey": "#888888"
-  }
-};
-
-// Audio Context for Web Audio API
-let audioContext = null;
-let backgroundMusic = null;
-
-// Initialize audio context
-function initAudio() {
-  try {
-    if (!audioContext) {
-      audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    return audioContext;
-  } catch (error) {
-    console.log('Audio context not available:', error);
-    return null;
-  }
-}
-
-// Create chime sound using Web Audio API
-function playChime() {
-  try {
-    const ctx = initAudio();
-    if (!ctx) return;
-    
-    // Resume context if suspended
-    if (ctx.state === 'suspended') {
-      ctx.resume();
-    }
-    
-    // Create a gentle chime sound
-    const frequencies = [523.25, 659.25, 783.99]; // C5, E5, G5
-    
-    frequencies.forEach((freq, index) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      
-      osc.frequency.setValueAtTime(freq, ctx.currentTime);
-      osc.type = 'sine';
-      
-      gain.gain.setValueAtTime(0, ctx.currentTime);
-      gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.1);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.5 + index * 0.2);
-      
-      osc.start(ctx.currentTime + index * 0.15);
-      osc.stop(ctx.currentTime + 2 + index * 0.2);
-    });
-  } catch (error) {
-    console.log('Chime sound not available:', error);
-  }
-}
-
-// Create ambient background music
-function startBackgroundMusic() {
-  try {
-    const ctx = initAudio();
-    if (!ctx) return;
-    
-    // Resume context if suspended
-    if (ctx.state === 'suspended') {
-      ctx.resume();
-    }
-    
-    // Create a gentle, ambient background tone
-    const oscillator1 = ctx.createOscillator();
-    const oscillator2 = ctx.createOscillator();
-    const gainNode1 = ctx.createGain();
-    const gainNode2 = ctx.createGain();
-    
-    oscillator1.connect(gainNode1);
-    oscillator2.connect(gainNode2);
-    gainNode1.connect(ctx.destination);
-    gainNode2.connect(ctx.destination);
-    
-    // Soft, harmonic frequencies
-    oscillator1.frequency.setValueAtTime(220, ctx.currentTime); // A3
-    oscillator2.frequency.setValueAtTime(330, ctx.currentTime); // E4
-    
-    oscillator1.type = 'sine';
-    oscillator2.type = 'sine';
-    
-    // Very gentle volume
-    gainNode1.gain.setValueAtTime(0, ctx.currentTime);
-    gainNode2.gain.setValueAtTime(0, ctx.currentTime);
-    gainNode1.gain.linearRampToValueAtTime(0.02, ctx.currentTime + 2);
-    gainNode2.gain.linearRampToValueAtTime(0.015, ctx.currentTime + 3);
-    
-    oscillator1.start();
-    oscillator2.start();
-    
-    // Store references for potential cleanup
-    backgroundMusic = { oscillator1, oscillator2, gainNode1, gainNode2 };
-  } catch (error) {
-    console.log('Background music not available:', error);
-  }
-}
-
-// Petals animation system
-class PetalsManager {
-  constructor() {
-    this.container = document.getElementById('petalsContainer');
-    this.petals = [];
-    this.isIntense = false;
-    this.isRunning = false;
-  }
-  
-  createPetal() {
-    if (!this.container) return null;
-    
-    const petal = document.createElement('div');
-    petal.className = 'petal';
-    
-    // Random properties
-    const isGold = Math.random() < 0.3;
-    const size = Math.random() < 0.3 ? 'large' : Math.random() < 0.5 ? 'small' : '';
-    
-    if (isGold) petal.classList.add('gold');
-    if (size) petal.classList.add(size);
-    
-    // Random position and timing
-    const leftPosition = Math.random() * 100;
-    const animationDuration = this.isIntense ? 4 + Math.random() * 3 : 8 + Math.random() * 6;
-    const delay = Math.random() * 1;
-    
-    petal.style.left = leftPosition + '%';
-    petal.style.animationDuration = animationDuration + 's';
-    petal.style.animationDelay = delay + 's';
-    
-    // Add some horizontal drift
-    const drift = (Math.random() - 0.5) * 40;
-    petal.style.setProperty('--drift', drift + 'px');
-    
-    this.container.appendChild(petal);
-    this.petals.push(petal);
-    
-    // Remove petal after animation
-    setTimeout(() => {
-      if (petal && petal.parentNode) {
-        petal.parentNode.removeChild(petal);
-        const index = this.petals.indexOf(petal);
-        if (index > -1) {
-          this.petals.splice(index, 1);
-        }
-      }
-    }, (animationDuration + delay + 1) * 1000);
-    
-    return petal;
-  }
-  
-  startAnimation() {
-    if (this.isRunning) return;
-    this.isRunning = true;
-    
-    const animate = () => {
-      if (!this.isRunning) return;
-      
-      this.createPetal();
-      
-      // Create new petals at intervals
-      const interval = this.isIntense ? 200 : 1000;
-      const randomDelay = Math.random() * 500;
-      
-      setTimeout(animate, interval + randomDelay);
-    };
-    
-    // Start the animation loop
-    animate();
-    
-    // Create initial petals immediately
-    for (let i = 0; i < 3; i++) {
-      setTimeout(() => this.createPetal(), i * 300);
-    }
-  }
-  
-  makeIntense() {
-    this.isIntense = true;
-    this.container.classList.add('petals-intense');
-    
-    // Create burst of petals
-    for (let i = 0; i < 15; i++) {
-      setTimeout(() => {
-        this.createPetal();
-      }, i * 80);
-    }
-  }
-  
-  stop() {
-    this.isRunning = false;
-  }
-}
-
-// Application controller
-class HeartfeltApp {
-  constructor() {
-    this.petalsManager = new PetalsManager();
-    this.isTransitioning = false;
-    this.spoilerRevealed = false;
-    this.init();
-  }
-  
-  init() {
-    // Wait for DOM to be fully ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => this.setup());
-    } else {
-      this.setup();
-    }
-  }
-  
-  setup() {
-    this.loadContent();
-    this.bindEvents();
-    
-    // Start petals animation after a short delay
-    setTimeout(() => {
-      this.petalsManager.startAnimation();
-    }, 500);
-    
-    // Initialize audio context on first user interaction
-    const initAudioOnce = () => {
-      initAudio();
-      document.removeEventListener('click', initAudioOnce);
-    };
-    document.addEventListener('click', initAudioOnce);
-  }
-  
-  loadContent() {
-    const elements = {
-      'welcomeText': appData.welcomeText,
-      'surpriseMainText': appData.surpriseMainText,
-      'footerText': appData.footerText,
-      'voucherCode': appData.voucherCode
-    };
-    
-    Object.keys(elements).forEach(id => {
-      const element = document.getElementById(id);
-      if (element) {
-        element.textContent = elements[id];
-      }
-    });
-    
-    // Set spoiler text
-    const spoilerText = document.getElementById('spoilerText');
-    if (spoilerText) {
-      spoilerText.textContent = appData.spoilerHiddenText;
-    }
-  }
-  
-  bindEvents() {
-    const tapButton = document.getElementById('tapButton');
-    if (tapButton) {
-      tapButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.handleTransition();
-      });
-    }
-    
-    // Spoiler button
-    const spoilerButton = document.getElementById('spoilerButton');
-    if (spoilerButton) {
-      spoilerButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.handleSpoilerReveal();
-      });
-    }
-    
-    // Single Gift button
-    const giftButton = document.getElementById('giftButton');
-    if (giftButton) {
-      giftButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.showGiftScreen('gift1');
-      });
-    }
-    
-    // Back from Gift
-    const backFromGift1 = document.getElementById('backFromGift1');
-    if (backFromGift1) {
-      backFromGift1.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.showSurpriseScreen();
-      });
-    }
-    
-    // Add keyboard support
-    document.addEventListener('keydown', (e) => {
-      if ((e.key === 'Enter' || e.key === ' ') && !this.isTransitioning) {
-        const surpriseScreen = document.getElementById('surpriseScreen');
-        if (surpriseScreen && !surpriseScreen.classList.contains('visible')) {
-          e.preventDefault();
-          this.handleTransition();
-        }
-      }
-    });
-  }
-  
-  async handleTransition() {
-    if (this.isTransitioning) return;
-    
-    console.log('Starting transition...'); // Debug log
-    this.isTransitioning = true;
-    
-    const welcomeScreen = document.getElementById('welcomeScreen');
-    const surpriseScreen = document.getElementById('surpriseScreen');
-    const tapButton = document.getElementById('tapButton');
-    
-    if (!welcomeScreen || !surpriseScreen) {
-      console.error('Screen elements not found');
-      this.isTransitioning = false;
-      return;
-    }
-    
-    console.log('Elements found, proceeding with transition'); // Debug log
-    
-    // Disable button
-    if (tapButton) {
-      tapButton.disabled = true;
-      tapButton.style.cursor = 'default';
-    }
-    
-    // Play chime sound
-    playChime();
-    
-    // Make petals intense
-    this.petalsManager.makeIntense();
-    
-    // Fade out welcome screen
-    welcomeScreen.style.transition = 'opacity 0.8s ease-in-out, transform 0.8s ease-in-out';
-    welcomeScreen.style.opacity = '0';
-    welcomeScreen.style.transform = 'translateY(-20px)';
-    
-    // Wait for fade out
-    await this.sleep(800);
-    
-    // Hide welcome screen
-    welcomeScreen.style.display = 'none';
-    
-    // Show and animate surprise screen
-    surpriseScreen.style.display = 'flex';
-    surpriseScreen.classList.remove('hidden');
-    
-    // Force reflow
-    surpriseScreen.offsetHeight;
-    
-    // Animate in
-    surpriseScreen.style.opacity = '1';
-    surpriseScreen.style.transform = 'translateY(0)';
-    surpriseScreen.classList.add('visible');
-    
-    console.log('Transition completed'); // Debug log
-    
-    // Start background music after a moment
-    setTimeout(() => {
-      startBackgroundMusic();
-    }, 1500);
-    
-    this.isTransitioning = false;
-  }
-  
-  handleSpoilerReveal() {
-    if (this.spoilerRevealed) return;
-    
-    console.log('Spoiler reveal triggered'); // Debug log
-    
-    const spoilerButton = document.getElementById('spoilerButton');
-    const spoilerText = document.getElementById('spoilerText');
-    
-    if (!spoilerButton || !spoilerText) return;
-    
-    this.spoilerRevealed = true;
-    
-    // Add revealed class for styling
-    spoilerButton.classList.add('revealed');
-    
-    // Change the text with animation
-    spoilerText.style.transition = 'opacity 0.3s ease';
-    spoilerText.style.opacity = '0';
-    
-    setTimeout(() => {
-      spoilerText.textContent = appData.spoilerRevealedText;
-      spoilerText.style.opacity = '1';
-    }, 300);
-    
-    // Disable further clicks
-    spoilerButton.style.cursor = 'default';
-    spoilerButton.disabled = true;
-  }
-  
-  async showGiftScreen(giftType) {
-    if (this.isTransitioning) return;
-    this.isTransitioning = true;
-    
-    console.log('Showing gift screen:', giftType); // Debug log
-    
-    const surpriseScreen = document.getElementById('surpriseScreen');
-    const giftScreen = document.getElementById(giftType + 'Screen');
-    
-    if (!surpriseScreen || !giftScreen) {
-      console.error('Gift screen elements not found');
-      this.isTransitioning = false;
-      return;
-    }
-    
-    // Fade out surprise screen
-    surpriseScreen.style.transition = 'opacity 0.4s ease-in-out, transform 0.4s ease-in-out';
-    surpriseScreen.style.opacity = '0';
-    surpriseScreen.style.transform = 'translateY(-20px)';
-    
-    await this.sleep(400);
-    
-    // Hide surprise screen
-    surpriseScreen.style.display = 'none';
-    surpriseScreen.classList.remove('visible');
-    
-    // Show gift screen
-    giftScreen.style.display = 'flex';
-    giftScreen.classList.remove('hidden');
-    
-    // Force reflow
-    giftScreen.offsetHeight;
-    
-    // Animate in
-    giftScreen.style.opacity = '1';
-    giftScreen.style.transform = 'translateY(0)';
-    giftScreen.classList.add('visible');
-    
-    this.isTransitioning = false;
-  }
-  
-  async showSurpriseScreen() {
-    if (this.isTransitioning) return;
-    this.isTransitioning = true;
-    
-    console.log('Returning to surprise screen'); // Debug log
-    
-    const surpriseScreen = document.getElementById('surpriseScreen');
-    const gift1Screen = document.getElementById('gift1Screen');
-    
-    // Find the currently visible gift screen
-    let currentGiftScreen = null;
-    if (gift1Screen && gift1Screen.classList.contains('visible')) {
-      currentGiftScreen = gift1Screen;
-    }
-    
-    if (!currentGiftScreen || !surpriseScreen) {
-      this.isTransitioning = false;
-      return;
-    }
-    
-    // Fade out current gift screen
-    currentGiftScreen.style.transition = 'opacity 0.4s ease-in-out, transform 0.4s ease-in-out';
-    currentGiftScreen.style.opacity = '0';
-    currentGiftScreen.style.transform = 'translateY(-20px)';
-
-    await this.sleep(400);
-    
-    // Hide gift screen
-    currentGiftScreen.style.display = 'none';
-    currentGiftScreen.classList.remove('visible');
-    
-    // Show surprise screen
-    surpriseScreen.style.display = 'flex';
-    surpriseScreen.classList.remove('hidden');
-    
-    // Force reflow
-    surpriseScreen.offsetHeight;
-    
-    // Animate in
-    surpriseScreen.style.opacity = '1';
-    surpriseScreen.style.transform = 'translateY(0)';
-    surpriseScreen.classList.add('visible');
-    
-    this.isTransitioning = false;
-  }
-  
-  sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-}
-
-// Global app instance
-let app;
+// Global variables
+let currentScreen = 1;
+let isTransitioning = false;
 
 // Initialize the application
-function initApp() {
-  if (!app) {
-    console.log('Initializing heartfelt app...');
-    app = new HeartfeltApp();
-  }
-}
-
-// Initialize when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initApp);
-} else {
-  initApp();
-}
-
-// Handle visibility change to pause/resume audio
-document.addEventListener('visibilitychange', () => {
-  if (audioContext) {
-    if (document.hidden) {
-      if (audioContext.state === 'running') {
-        audioContext.suspend();
-      }
-    } else {
-      if (audioContext.state === 'suspended') {
-        audioContext.resume();
-      }
-    }
-  }
+document.addEventListener('DOMContentLoaded', function() {
+    // Show initial screen with animations
+    initializeScreen1();
+    updateBackgroundAnimations();
 });
 
-// Add dynamic CSS for better petal animations
-const dynamicStyle = document.createElement('style');
-dynamicStyle.textContent = `
-  .petal {
-    animation-fill-mode: forwards;
-    will-change: transform, opacity;
-  }
-  
-  @keyframes float {
-    0% {
-      transform: translateY(100vh) translateX(0) rotate(0deg);
-      opacity: 0;
-    }
-    10% {
-      opacity: 0.7;
-    }
-    50% {
-      transform: translateY(50vh) translateX(var(--drift, 0px)) rotate(180deg);
-    }
-    90% {
-      opacity: 0.7;
-    }
-    100% {
-      transform: translateY(-10vh) translateX(var(--drift, 0px)) rotate(360deg);
-      opacity: 0;
-    }
-  }
-  
-  @keyframes floatIntense {
-    0% {
-      transform: translateY(100vh) translateX(0) rotate(0deg) scale(1);
-      opacity: 0;
-    }
-    15% {
-      opacity: 0.9;
-    }
-    50% {
-      transform: translateY(50vh) translateX(var(--drift, 0px)) rotate(180deg) scale(1.3);
-      opacity: 0.9;
-    }
-    85% {
-      opacity: 0.9;
-    }
-    100% {
-      transform: translateY(-10vh) translateX(var(--drift, 0px)) rotate(360deg) scale(1);
-      opacity: 0;
-    }
-  }
-  
-  .petals-intense .petal {
-    animation-name: floatIntense;
-  }
-`;
-
-// Add the style when DOM is ready
-if (document.head) {
-  document.head.appendChild(dynamicStyle);
-} else {
-  document.addEventListener('DOMContentLoaded', () => {
-    document.head.appendChild(dynamicStyle);
-  });
+// Function to show a specific screen
+function showScreen(screenNumber) {
+    if (isTransitioning) return; // Prevent multiple rapid clicks
+    
+    isTransitioning = true;
+    
+    // Hide current screen
+    const currentScreenElement = document.getElementById(`screen${currentScreen}`);
+    currentScreenElement.classList.remove('active');
+    
+    // Update body class for background changes
+    updateBodyClass(screenNumber);
+    
+    // Show new screen after a brief delay
+    setTimeout(() => {
+        const newScreenElement = document.getElementById(`screen${screenNumber}`);
+        newScreenElement.classList.add('active');
+        
+        // Initialize animations for the new screen
+        if (screenNumber === 1) {
+            initializeScreen1();
+        } else if (screenNumber === 2) {
+            initializeScreen2();
+        } else if (screenNumber === 3) {
+            initializeScreen3();
+        }
+        
+        currentScreen = screenNumber;
+        updateBackgroundAnimations();
+        
+        // Reset transition flag after animations complete
+        setTimeout(() => {
+            isTransitioning = false;
+        }, 100);
+    }, 300);
 }
+
+// Update body class for background transitions
+function updateBodyClass(screenNumber) {
+    const body = document.body;
+    body.classList.remove('screen1-active', 'screen2-active', 'screen3-active');
+    body.classList.add(`screen${screenNumber}-active`);
+}
+
+// Update background animations visibility
+function updateBackgroundAnimations() {
+    const screen1Backgrounds = document.querySelectorAll('.screen1-bg');
+    const screen2Backgrounds = document.querySelectorAll('.screen2-bg');
+    const screen3Backgrounds = document.querySelectorAll('.screen3-bg');
+    
+    // Hide all backgrounds first
+    screen1Backgrounds.forEach(bg => bg.style.opacity = '0');
+    screen2Backgrounds.forEach(bg => bg.style.opacity = '0');
+    screen3Backgrounds.forEach(bg => bg.style.opacity = '0');
+    
+    // Show current screen's backgrounds
+    setTimeout(() => {
+        if (currentScreen === 1) {
+            screen1Backgrounds.forEach(bg => bg.style.opacity = '1');
+        } else if (currentScreen === 2) {
+            screen2Backgrounds.forEach(bg => bg.style.opacity = '1');
+        } else if (currentScreen === 3) {
+            screen3Backgrounds.forEach(bg => bg.style.opacity = '1');
+        }
+    }, 300);
+}
+
+// Initialize Screen 1 animations
+function initializeScreen1() {
+    const lines = document.querySelectorAll('#screen1 .line');
+    const button = document.querySelector('#screen1 .romantic-btn');
+    
+    // Reset all animations
+    lines.forEach(line => {
+        line.style.opacity = '0';
+        line.style.transform = 'translateY(20px)';
+    });
+    
+    button.style.opacity = '0';
+    button.style.transform = 'translateY(10px)';
+    
+    // Animate lines appearing
+    lines.forEach((line, index) => {
+        setTimeout(() => {
+            line.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
+            line.style.opacity = '1';
+            line.style.transform = 'translateY(0)';
+        }, 300 + (index * 300));
+    });
+    
+    // Animate button appearing
+    setTimeout(() => {
+        button.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
+        button.style.opacity = '1';
+        button.style.transform = 'translateY(0)';
+    }, 1500);
+}
+
+// Initialize Screen 2 animations
+function initializeScreen2() {
+    const stanzas = document.querySelectorAll('#screen2 .stanza');
+    const button = document.querySelector('#screen2 .romantic-btn');
+    
+    // Reset animations
+    stanzas.forEach(stanza => {
+        stanza.style.opacity = '0';
+        stanza.style.transform = 'translateY(20px)';
+    });
+    
+    button.style.opacity = '0';
+    button.style.transform = 'translateY(10px)';
+    
+    // Animate stanzas appearing
+    stanzas.forEach((stanza, index) => {
+        setTimeout(() => {
+            stanza.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
+            stanza.style.opacity = '1';
+            stanza.style.transform = 'translateY(0)';
+        }, 200 + (index * 300));
+    });
+    
+    // Animate button appearing
+    setTimeout(() => {
+        button.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
+        button.style.opacity = '1';
+        button.style.transform = 'translateY(0)';
+    }, 1200);
+}
+
+// Initialize Screen 3 animations
+function initializeScreen3() {
+    const header = document.querySelector('#screen3 .gift-header');
+    const gallery = document.querySelector('#screen3 .flower-gallery');
+    const instruction = document.querySelector('#screen3 .instruction-text');
+    const button = document.querySelector('#screen3 .romantic-btn');
+    
+    // Reset animations
+    [header, gallery, instruction, button].forEach(element => {
+        if (element) {
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(20px)';
+        }
+    });
+    
+    // Animate elements appearing sequentially
+    const elements = [header, gallery, instruction, button];
+    const delays = [200, 400, 600, 800];
+    
+    elements.forEach((element, index) => {
+        if (element) {
+            setTimeout(() => {
+                element.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
+                element.style.opacity = '1';
+                element.style.transform = 'translateY(0)';
+            }, delays[index]);
+        }
+    });
+}
+
+// Add subtle hover effects to flower placeholders
+document.addEventListener('DOMContentLoaded', function() {
+    const flowerPlaceholders = document.querySelectorAll('.flower-placeholder');
+    
+    flowerPlaceholders.forEach(placeholder => {
+        placeholder.addEventListener('mouseenter', function() {
+            if (!isTransitioning) {
+                this.style.transform = 'translateY(-5px) scale(1.02)';
+            }
+        });
+        
+        placeholder.addEventListener('mouseleave', function() {
+            if (!isTransitioning) {
+                this.style.transform = 'translateY(0) scale(1)';
+            }
+        });
+    });
+});
+
+// Add smooth button hover effects
+document.addEventListener('DOMContentLoaded', function() {
+    const buttons = document.querySelectorAll('.romantic-btn');
+    
+    buttons.forEach(button => {
+        button.addEventListener('mouseenter', function() {
+            if (!isTransitioning && this.style.opacity === '1') {
+                this.style.transform = 'translateY(-2px) scale(1.05)';
+            }
+        });
+        
+        button.addEventListener('mouseleave', function() {
+            if (!isTransitioning && this.style.opacity === '1') {
+                this.style.transform = 'translateY(0) scale(1)';
+            }
+        });
+        
+        button.addEventListener('mousedown', function() {
+            if (!isTransitioning && this.style.opacity === '1') {
+                this.style.transform = 'translateY(1px) scale(1.02)';
+            }
+        });
+        
+        button.addEventListener('mouseup', function() {
+            if (!isTransitioning && this.style.opacity === '1') {
+                this.style.transform = 'translateY(-2px) scale(1.05)';
+            }
+        });
+    });
+});
+
+// Keyboard navigation support
+document.addEventListener('keydown', function(event) {
+    if (isTransitioning) return;
+    
+    switch(event.key) {
+        case 'ArrowRight':
+        case ' ':
+        case 'Enter':
+            if (currentScreen < 3) {
+                showScreen(currentScreen + 1);
+            }
+            break;
+        case 'ArrowLeft':
+            if (currentScreen > 1) {
+                showScreen(currentScreen - 1);
+            }
+            break;
+        case 'Home':
+            showScreen(1);
+            break;
+    }
+});
+
+// Add a gentle parallax effect to the animated elements
+let mouseEffectActive = false;
+document.addEventListener('mousemove', function(event) {
+    if (mouseEffectActive || isTransitioning) return;
+    
+    mouseEffectActive = true;
+    setTimeout(() => {
+        mouseEffectActive = false;
+    }, 50);
+    
+    const mouseX = event.clientX / window.innerWidth;
+    const mouseY = event.clientY / window.innerHeight;
+    
+    // Apply subtle parallax to animated elements
+    const hearts = document.querySelectorAll('.heart, .celebration-heart');
+    const flowers = document.querySelectorAll('.flower, .celebration-flower');
+    const petals = document.querySelectorAll('.petal, .drift-petal');
+    
+    const offsetMultiplier = 5;
+    const offsetX = (mouseX - 0.5) * offsetMultiplier;
+    const offsetY = (mouseY - 0.5) * offsetMultiplier;
+    
+    hearts.forEach(heart => {
+        heart.style.transform += ` translate(${offsetX * 0.5}px, ${offsetY * 0.3}px)`;
+    });
+    
+    flowers.forEach(flower => {
+        flower.style.transform += ` translate(${offsetX * 0.3}px, ${offsetY * 0.5}px)`;
+    });
+    
+    petals.forEach(petal => {
+        petal.style.transform += ` translate(${offsetX * 0.7}px, ${offsetY * 0.4}px)`;
+    });
+});
+
+// Initialize background animations and screen on load
+document.addEventListener('DOMContentLoaded', function() {
+    // Set initial body class
+    updateBodyClass(1);
+    
+    // Add staggered animation delays to create more natural movement
+    const hearts = document.querySelectorAll('.heart');
+    hearts.forEach((heart, index) => {
+        const delay = Math.random() * 5; // Random delay up to 5 seconds
+        heart.style.animationDelay = `${delay}s`;
+    });
+    
+    const petals = document.querySelectorAll('.petal, .drift-petal');
+    petals.forEach((petal, index) => {
+        const delay = Math.random() * 8; // Random delay up to 8 seconds
+        petal.style.animationDelay = `${delay}s`;
+    });
+    
+    const flowers = document.querySelectorAll('.flower');
+    flowers.forEach((flower, index) => {
+        const delay = Math.random() * 10; // Random delay up to 10 seconds
+        flower.style.animationDelay = `${delay}s`;
+    });
+    
+    const celebrationHearts = document.querySelectorAll('.celebration-heart');
+    celebrationHearts.forEach((heart, index) => {
+        const delay = Math.random() * 3; // Random delay up to 3 seconds
+        heart.style.animationDelay = `${delay}s`;
+    });
+    
+    const celebrationFlowers = document.querySelectorAll('.celebration-flower');
+    celebrationFlowers.forEach((flower, index) => {
+        const delay = Math.random() * 4; // Random delay up to 4 seconds
+        flower.style.animationDelay = `${delay}s`;
+    });
+});
+
+// Smooth scrolling for mobile devices
+document.addEventListener('touchstart', function() {}, {passive: true});
+document.addEventListener('touchmove', function() {}, {passive: true});
+
+// Performance optimization: pause animations when tab is not visible
+document.addEventListener('visibilitychange', function() {
+    const animatedElements = document.querySelectorAll('.heart, .petal, .flower, .drift-petal, .celebration-heart, .celebration-flower');
+    
+    if (document.hidden) {
+        // Pause animations
+        animatedElements.forEach(element => {
+            element.style.animationPlayState = 'paused';
+        });
+    } else {
+        // Resume animations
+        animatedElements.forEach(element => {
+            element.style.animationPlayState = 'running';
+        });
+    }
+});
+
+// Add resize handler for responsive animation adjustments
+window.addEventListener('resize', function() {
+    // Adjust animation elements for mobile
+    if (window.innerWidth <= 768) {
+        const animatedElements = document.querySelectorAll('.heart, .petal, .flower, .drift-petal');
+        animatedElements.forEach(element => {
+            element.style.transform = 'scale(0.8)';
+        });
+    } else if (window.innerWidth <= 480) {
+        const animatedElements = document.querySelectorAll('.heart, .petal, .flower, .drift-petal');
+        animatedElements.forEach(element => {
+            element.style.transform = 'scale(0.6)';
+        });
+    } else {
+        const animatedElements = document.querySelectorAll('.heart, .petal, .flower, .drift-petal');
+        animatedElements.forEach(element => {
+            element.style.transform = 'scale(1)';
+        });
+    }
+});

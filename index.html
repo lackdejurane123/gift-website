@@ -3,58 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOOOOOOOOOO💕</title>
+    <title>Hi love! ❤️</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Dancing+Script:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Floating Petals Animation -->
-    <div class="petals-container" id="petalsContainer"></div>
+    <!-- Animated Background Elements -->
+    <div class="animated-background">
+        <!-- Hearts for Screen 1 -->
+        <div class="heart-container screen1-bg">
+            <div class="heart heart-small" style="left: 10%; animation-delay: 0s;"></div>
+            <div class="heart heart-medium" style="left: 20%; animation-delay: 2s;"></div>
+            <div class="heart heart-large" style="left: 30%; animation-delay: 4s;"></div>
+            <div class="heart heart-small" style="left: 50%; animation-delay: 1s;"></div>
+            <div class="heart heart-medium" style="left: 65%; animation-delay: 3s;"></div>
+            <div class="heart heart-small" style="left: 80%; animation-delay: 5s;"></div>
+            <div class="heart heart-large" style="left: 90%; animation-delay: 1.5s;"></div>
+        </div>
+        
+        <!-- Flower Petals for Screen 1 -->
+        <div class="petal-container screen1-bg">
+            <div class="petal petal-1" style="left: 15%; animation-delay: 0.5s;"></div>
+            <div class="petal petal-2" style="left: 35%; animation-delay: 2.5s;"></div>
+            <div class="petal petal-3" style="left: 55%; animation-delay: 4.5s;"></div>
+            <div class="petal petal-1" style="left: 75%; animation-delay: 1.5s;"></div>
+            <div class="petal petal-2" style="left: 85%; animation-delay: 3.5s;"></div>
+        </div>
 
-    <!-- Welcome Screen -->
-    <div class="screen welcome-screen" id="welcomeScreen">
-        <div class="welcome-content">
-            <p class="welcome-text" id="welcomeText"></p>
-            <button class="tap-button" id="tapButton">
-                <span>I swear I will update the interface soon.</span>
-            </button>
+        <!-- Rotating Flowers for Screen 2 -->
+        <div class="flower-container screen2-bg">
+            <div class="flower flower-bloom" style="left: 12%; top: 20%; animation-delay: 0s;">🌸</div>
+            <div class="flower flower-bloom" style="left: 25%; top: 60%; animation-delay: 1s;">🌺</div>
+            <div class="flower flower-bloom" style="left: 45%; top: 15%; animation-delay: 2s;">🌸</div>
+            <div class="flower flower-bloom" style="left: 65%; top: 75%; animation-delay: 0.5s;">🌺</div>
+            <div class="flower flower-bloom" style="left: 85%; top: 35%; animation-delay: 1.5s;">🌸</div>
+        </div>
+        
+        <!-- Drifting Petals for Screen 2 -->
+        <div class="drift-petal-container screen2-bg">
+            <div class="drift-petal drift-1" style="left: 18%; animation-delay: 1s;"></div>
+            <div class="drift-petal drift-2" style="left: 38%; animation-delay: 3s;"></div>
+            <div class="drift-petal drift-3" style="left: 58%; animation-delay: 0s;"></div>
+            <div class="drift-petal drift-1" style="left: 78%; animation-delay: 2s;"></div>
+        </div>
+
+        <!-- Celebration Elements for Screen 3 -->
+        <div class="celebration-container screen3-bg">
+            <!-- Hearts -->
+            <div class="celebration-heart" style="left: 10%; animation-delay: 0s;"></div>
+            <div class="celebration-heart" style="left: 25%; animation-delay: 0.8s;"></div>
+            <div class="celebration-heart" style="left: 40%; animation-delay: 1.6s;"></div>
+            <div class="celebration-heart" style="left: 60%; animation-delay: 0.4s;"></div>
+            <div class="celebration-heart" style="left: 75%; animation-delay: 1.2s;"></div>
+            <div class="celebration-heart" style="left: 90%; animation-delay: 2s;"></div>
+            
+            <!-- Flowers -->
+            <div class="celebration-flower" style="left: 15%; animation-delay: 0.2s;">🌸</div>
+            <div class="celebration-flower" style="left: 35%; animation-delay: 1s;">🌺</div>
+            <div class="celebration-flower" style="left: 55%; animation-delay: 1.8s;">🌸</div>
+            <div class="celebration-flower" style="left: 85%; animation-delay: 0.6s;">🌺</div>
         </div>
     </div>
 
-    <!-- Surprise Reveal Screen -->
-    <div class="screen surprise-screen hidden" id="surpriseScreen">
-        <div class="surprise-content">
-            <p class="surprise-main-text" id="surpriseMainText"></p>
-
-            <!-- Spoiler Text Feature -->
-            <div class="spoiler-container" id="spoilerContainer">
-                <button class="spoiler-button" id="spoilerButton">
-                    <span class="spoiler-text" id="spoilerText">I know whatever you are going through is..hard. I am trying too.</span>
+    <div class="app-container">
+        
+        <!-- Screen 1: Opening Lines -->
+        <div id="screen1" class="screen active">
+            <div class="content-wrapper">
+                <div class="opening-lines">
+                    <p class="line fade-in-up" style="animation-delay: 0.5s;">See, I updated the website!</p>
+                    <p class="line fade-in-up" style="animation-delay: 1s;">Idk if this looks good or not to you, but this i found nice.</p>
+                    <p class="line fade-in-up" style="animation-delay: 1.5s;">I hope you like this.</p>
+                    <p class="line fade-in-up" style="animation-delay: 2s;">I hope you are much better now. I love you. <3 </p>
+                </div>
+                <button class="romantic-btn fade-in-up" style="animation-delay: 2.5s;" onclick="showScreen(2)">
+                    Continue
                 </button>
             </div>
-
-            <!-- Single Gift Button -->
-            <div class="gift-buttons" id="giftButtons">
-                <button class="gift-button" id="giftButton">Open Gift 🎁</button>
-            </div>
-
-            <p class="footer-text" id="footerText"></p>
         </div>
-    </div>
 
-    <!-- Gift Screen -->
-    <div class="screen gift-screen hidden" id="gift1Screen">
-        <div class="gift-content">
-            <h2 class="gift-title" id="gift1Title">Some flowers for you! 💐</h2>
-            <div class="image-gallery">
-                <div class="image-container">
-                    <img src="1.jpg" alt="First photo" class="gift-image">
+        <!-- Screen 2: Poem -->
+        <div id="screen2" class="screen">
+            <div class="content-wrapper">
+                <div class="poem-container">
+                    <div class="stanza">
+                        <p class="poem-line">Your head rests so close,</p>
+                        <p class="poem-line">I feel your breath linger,</p>
+                        <p class="poem-line">a whisper away</p>
+                        <p class="poem-line">from the curve of my lips. (I am sorry this is cringe)</p>
+                    </div>
+                    
+                    <div class="stanza">
+                        <p class="poem-line">I miss that nearness,</p>
+                        <p class="poem-line">the quiet electricity of you,</p>
+                        <p class="poem-line">like a secret the universe</p>
+                        <p class="poem-line">lets me hold for a moment.</p>
+                    </div>
+                    
                 </div>
-                <div class="image-container">
-                    <img src="2.jpg" alt="Second flower photo" class="gift-image">
-                </div>
+                <button class="romantic-btn" onclick="showScreen(3)">
+                    Your Regular Gift
+                </button>
             </div>
-            <button class="back-button" id="backFromGift1">← Back</button>
+        </div>
+
+        <!-- Screen 3: Gift Page -->
+        <div id="screen3" class="screen">
+            <div class="content-wrapper">
+                <h2 class="gift-header">I took these photos thinking of you</h2>
+                
+                <div class="flower-gallery">
+                    <div class="flower-placeholder">
+                        <div class="placeholder-icon">🌸</div>
+                        <img src="1.jpg" alt="First photo" class="gift-image">
+                    </div>
+                    <div class="flower-placeholder">
+                        <div class="placeholder-icon">🌺</div>
+                        <img src="2.jpg" alt="Second flower photo" class="gift-image">
+                    </div>
+                </div>
+                
+                <p class="instruction-text"></p>
+                
+                <button class="romantic-btn" onclick="showScreen(1)">
+                    Back to Beginning
+                </button>
+            </div>
         </div>
     </div>
 
