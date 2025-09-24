@@ -398,29 +398,25 @@ function smoothScroll() {
     }
 }
 
-// === Persistent message store (GitHub Pages-safe) ===
+// === Persistent message store (for /gift-website/) ===
 const STORAGE_KEY = location.pathname.replace(/\/index\.html$/, '/') + ':sweetMessages';
 
-// Single source of truth
 function loadAll() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
   catch { return []; }
 }
-function saveAll(list) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-}
+function saveAll(list) { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
+
 let messages = loadAll();
 
-// UI helpers
 function displayMessages() {
   const listEl = document.getElementById('msg-list');
   if (!listEl) return;
-  const list = messages;
-  if (!list.length) {
+  if (!messages.length) {
     listEl.innerHTML = '<p class="msg-empty">No messages yet. Write the first one! ✨</p>';
     return;
   }
-  listEl.innerHTML = '<h4>Your Messages:</h4>' + list.map(m => `
+  listEl.innerHTML = '<h4>Your Messages:</h4>' + messages.map(m => `
     <div class="msg-item">
       <div class="msg-text">${String(m.text)
         .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
@@ -450,17 +446,16 @@ function deleteMessage(id) {
   displayMessages();
 }
 
-// Ensure first render shows persisted messages
+// First render after page load
 document.addEventListener('DOMContentLoaded', () => {
   messages = loadAll();
   displayMessages();
 });
 
-// Optional: render whenever modal opens (if using openMsgModal)
+// Ensure list repaints when modal opens
 const _open = window.openMsgModal;
 window.openMsgModal = function() {
   if (typeof _open === 'function') _open();
   messages = loadAll();
   setTimeout(displayMessages, 50);
 };
-
