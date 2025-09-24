@@ -397,3 +397,84 @@ function smoothScroll() {
         msgList.scrollTop = 0; // Scroll to top to show newest messages
     }
 }
+
+// ===== Message persistence shim (GitHub Pages-safe) =====
+(() => {
+  const STORAGE_KEY = location.pathname + ':sweetMessages'; // avoids repo collisions
+  function getMessages() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+    catch { return []; }
+  }
+  function setMessages(list) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  }
+
+  // Expose helpers (works with your existing UI functions if present)
+  window.sweetMsgStore = {
+    all: () => getMessages(),
+    add: (text) => {
+      const list = getMessages();
+      list.unshift({ id: Date.now(), text: String(text), ts: new Date().toLocaleString() });
+      setMessages(list);
+      return list;
+    },
+    remove: (id) => {
+      const list = getMessages().filter(m => m.id !== id);
+      setMessages(list);
+      return list;
+    }
+  };
+
+  // Wire up common function names if they already exist in your code:
+  // saveMsg -> persist, displayMessages -> re-render from storage, loadMessages -> bootstrap
+  window.loadMessages = function loadMessages() {
+    // No-op: calling ensures storage is initialized; your UI can call displayMessages() after this
+    getMessages();
+  };
+
+  window.displayMessages = window.displayMessages || function displayMessages() {
+    const listEl = document.getElementById('msg-list');
+    if (!listEl) return;
+    const list = getMessages();
+    if (!list.length) {
+      listEl.innerHTML = '<p class="msg-empty">No messages yet. Write the first one! ✨</p>';
+      return;
+    }
+    listEl.innerHTML = '<h4>Your Messages:</h4>' + list.map(m => `
+      <div class="msg-item">
+        <div class="msg-text">${String(m.text)
+          .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+          .replace(/\"/g,'&quot;').replace(/'/g,'&#039;')}</div>
+        <div class="msg-timestamp">${m.ts}</div>
+        <button class="msg-delete" onclick="deleteMessage(${m.id})" title="Delete message">×</button>
+      </div>
+    `).join('');
+  };
+
+  window.saveMsg = window.saveMsg || function saveMsg() {
+    const ta = document.getElementById('msg-text');
+    if (!ta) return;
+    const text = ta.value.trim();
+    if (!text) return;
+    sweetMsgStore.add(text);
+    ta.value = '';
+    const cnt = document.getElementById('msg-count');
+    if (cnt) cnt.textContent = '0';
+    if (typeof displayMessages === 'function') displayMessages();
+  };
+
+  window.deleteMessage = window.deleteMessage || function deleteMessage(id) {
+    sweetMsgStore.remove(id);
+    if (typeof displayMessages === 'function') displayMessages();
+  };
+
+  // Ensure messages are available as soon as DOM is ready; re-render when modal opens
+  document.addEventListener('DOMContentLoaded', () => {
+    loadMessages(); // populate storage model
+    document.addEventListener('click', (e) => {
+      if (e.target && e.target.matches('[onclick^="openMsgModal"]')) {
+        setTimeout(() => { if (typeof displayMessages === 'function') displayMessages(); }, 50);
+      }
+    }, { passive: true });
+  });
+})();
