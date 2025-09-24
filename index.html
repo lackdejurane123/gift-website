@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> <3 :3 </title>
+    <title>❤️</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -73,12 +73,12 @@
         <div id="screen1" class="screen active">
             <div class="content-wrapper">
                 <div class="opening-lines">
-                      <p class="line fade-in-up" style="animation-delay: 0.5s;">Hi Sandhya. </p>
-                      <p class="line fade-in-up" style="animation-delay: 1s;">I know you have not been well mentally.</p>
-                      <p class="line fade-in-up" style="animation-delay: 1.5s;">I am such an idiot who keeps behaving like this, worrying you even more.</p>
-                      <p class="line fade-in-up" style="animation-delay: 2s;"> I will live, for me, for you, I will. I want to see you again.</p>
-                      <p class="line fade-in-up" style="animation-delay: 2s;"> I am proud of you as akways.🫂</p>
-                      <p class="line fade-in-up" style="animation-delay: 2.5s;">I REALLY REALLY REALLY LOVE YOU!!!! <3 . </p>
+                    <p class="line fade-in-up" style="animation-delay: 0.5s;">Hi Sandhya.</p>
+                    <p class="line fade-in-up" style="animation-delay: 1s;">I know you have not been well mentally.</p>
+                    <p class="line fade-in-up" style="animation-delay: 1s;"> I am such an idiot who keeps behaving like this, worrying you even more.</p>
+                    <p class="line fade-in-up" style="animation-delay: 2s;"> I will live, for me, for you, I will. I want to see you again.</p>
+                    <p class="line fade-in-up" style="animation-delay: 2s;"> I am proud of you as always.🫂</p>  
+                    <p class="line fade-in-up" style="animation-delay: 2.5s;">I REALLY REALLY REALLY LOVE YOU!!!! 💖</p>                  
                 </div>
                 <button class="romantic-btn fade-in-up" style="animation-delay: 2.5s;" onclick="showScreen(2)">
                     Continue
@@ -102,11 +102,10 @@
                         <p class="poem-line">because nothing feels lighter</p>
                         <p class="poem-line">than laughing with you.</p>
                         <p class="poem-line"> i am very sorry for myself, I am trying. I am trying. too many poems in a day lol</p>
-                    </div>                    
-                    
+                    </div>                       
                 </div>
                 <button class="romantic-btn" onclick="showScreen(3)">
-                    for you ofcourse <3
+                    for you <3
                 </button>
             </div>
         </div>
@@ -114,25 +113,65 @@
         <!-- Screen 3: Gift Page -->
         <div id="screen3" class="screen">
             <div class="content-wrapper">
-                <h2 class="gift-header"> I GOT ITTTT </h2>
+                <h2 class="gift-header"> GO TITTTTTT!!!  </h2>
                 
                 <div class="flower-gallery">
                     <div class="flower-placeholder">
-                        <div class="placeholder-icon">🌸</div>
+                        <div class="placeholder-icon"></div>
                         <img src="1.jpg" alt="First photo" class="gift-image">
                     </div>
                     <div class="flower-placeholder">
-                        <div class="placeholder-icon">🌺</div>
+                        <div class="placeholder-icon"></div>
                         <img src="2.jpg" alt="Second flower photo" class="gift-image">
                     </div>
                 </div>
                 
                 <p class="instruction-text"></p>
                 
-                <button class="romantic-btn" onclick="showScreen(1)">
-                    first page again
-                </button>
+                <div class="screen3-buttons">
+                    <button class="romantic-btn" onclick="openMsgModal()">
+                        Leave a message..
+                    </button>
+                    <button class="romantic-btn" onclick="showScreen(1)">
+                        to the first page back
+                    </button>
+                </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Message Modal -->
+    <div id="msg-modal" class="msg-modal hidden">
+        <div class="msg-backdrop" onclick="closeMsgModal()"></div>
+        <div class="msg-panel">
+            <div class="msg-header">
+                <h3>Leave me some message if you want..</h3>
+                <button class="msg-close" onclick="closeMsgModal()">×</button>
+            </div>
+            
+            <div class="msg-body">
+                <textarea id="msg-text" class="msg-input" maxlength="500" placeholder="Write something... ✨"></textarea>
+                <div class="msg-counter"><span id="msg-count">0</span>/500</div>
+                
+                <div class="msg-actions">
+                    <button class="romantic-btn msg-send-btn" onclick="saveMsg()">
+                        Send Message!!
+                    </button>
+                    <button class="romantic-btn msg-close-btn" onclick="closeMsgModal()">
+                        Close
+                    </button>
+                </div>
+            </div>
+            
+            <div id="msg-list" class="msg-list"></div>
+        </div>
+    </div>
+
+    <!-- Success notification -->
+    <div id="success-notification" class="notification hidden">
+        <div class="notification-content">
+            <span class="notification-icon">hehe</span>
+            <span class="notification-text">Message sent successfully!</span>
         </div>
     </div>
 

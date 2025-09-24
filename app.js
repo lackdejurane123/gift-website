@@ -1,356 +1,399 @@
 // Global variables
 let currentScreen = 1;
-let isTransitioning = false;
+let messages = []; // Store messages in memory instead of localStorage
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
-    // Show initial screen with animations
-    initializeScreen1();
-    updateBackgroundAnimations();
-});
-
-// Function to show a specific screen
-function showScreen(screenNumber) {
-    if (isTransitioning) return; // Prevent multiple rapid clicks
+    console.log('Website initialized!');
     
-    isTransitioning = true;
-    
-    // Hide current screen
-    const currentScreenElement = document.getElementById(`screen${currentScreen}`);
-    currentScreenElement.classList.remove('active');
-    
-    // Update body class for background changes
-    updateBodyClass(screenNumber);
-    
-    // Show new screen after a brief delay
+    // Set initial screen
     setTimeout(() => {
-        const newScreenElement = document.getElementById(`screen${screenNumber}`);
-        newScreenElement.classList.add('active');
-        
-        // Initialize animations for the new screen
-        if (screenNumber === 1) {
-            initializeScreen1();
-        } else if (screenNumber === 2) {
-            initializeScreen2();
-        } else if (screenNumber === 3) {
-            initializeScreen3();
+        showScreen(1);
+    }, 100);
+    
+    // Initialize message counter
+    const msgText = document.getElementById('msg-text');
+    const msgCount = document.getElementById('msg-count');
+    
+    if (msgText && msgCount) {
+        msgText.addEventListener('input', function() {
+            msgCount.textContent = this.value.length;
+        });
+    }
+    
+    // Load existing messages
+    loadMessages();
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeMsgModal();
         }
-        
-        currentScreen = screenNumber;
-        updateBackgroundAnimations();
-        
-        // Reset transition flag after animations complete
-        setTimeout(() => {
-            isTransitioning = false;
-        }, 100);
-    }, 300);
-}
-
-// Update body class for background transitions
-function updateBodyClass(screenNumber) {
-    const body = document.body;
-    body.classList.remove('screen1-active', 'screen2-active', 'screen3-active');
-    body.classList.add(`screen${screenNumber}-active`);
-}
-
-// Update background animations visibility
-function updateBackgroundAnimations() {
-    const screen1Backgrounds = document.querySelectorAll('.screen1-bg');
-    const screen2Backgrounds = document.querySelectorAll('.screen2-bg');
-    const screen3Backgrounds = document.querySelectorAll('.screen3-bg');
-    
-    // Hide all backgrounds first
-    screen1Backgrounds.forEach(bg => bg.style.opacity = '0');
-    screen2Backgrounds.forEach(bg => bg.style.opacity = '0');
-    screen3Backgrounds.forEach(bg => bg.style.opacity = '0');
-    
-    // Show current screen's backgrounds
-    setTimeout(() => {
-        if (currentScreen === 1) {
-            screen1Backgrounds.forEach(bg => bg.style.opacity = '1');
-        } else if (currentScreen === 2) {
-            screen2Backgrounds.forEach(bg => bg.style.opacity = '1');
-        } else if (currentScreen === 3) {
-            screen3Backgrounds.forEach(bg => bg.style.opacity = '1');
-        }
-    }, 300);
-}
-
-// Initialize Screen 1 animations
-function initializeScreen1() {
-    const lines = document.querySelectorAll('#screen1 .line');
-    const button = document.querySelector('#screen1 .romantic-btn');
-    
-    // Reset all animations
-    lines.forEach(line => {
-        line.style.opacity = '0';
-        line.style.transform = 'translateY(20px)';
     });
     
-    button.style.opacity = '0';
-    button.style.transform = 'translateY(10px)';
-    
-    // Animate lines appearing
-    lines.forEach((line, index) => {
-        setTimeout(() => {
-            line.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
-            line.style.opacity = '1';
-            line.style.transform = 'translateY(0)';
-        }, 300 + (index * 300));
-    });
-    
-    // Animate button appearing
+    // Add welcome effect
     setTimeout(() => {
-        button.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
-        button.style.opacity = '1';
-        button.style.transform = 'translateY(0)';
+        showNotification('TADAAAAAAAA', 'success');
     }, 1500);
-}
+});
 
-// Initialize Screen 2 animations
-function initializeScreen2() {
-    const stanzas = document.querySelectorAll('#screen2 .stanza');
-    const button = document.querySelector('#screen2 .romantic-btn');
+// FIXED Screen transition function
+function showScreen(screenNumber) {
+    // Prevent invalid screen numbers
+    if (screenNumber < 1 || screenNumber > 3) return;
     
-    // Reset animations
-    stanzas.forEach(stanza => {
-        stanza.style.opacity = '0';
-        stanza.style.transform = 'translateY(20px)';
+    console.log(`Switching to screen ${screenNumber}`);
+    
+    // Hide ALL screens first - this fixes the overlap issue
+    const allScreens = document.querySelectorAll('.screen');
+    allScreens.forEach(screen => {
+        screen.classList.remove('active');
     });
     
-    button.style.opacity = '0';
-    button.style.transform = 'translateY(10px)';
-    
-    // Animate stanzas appearing
-    stanzas.forEach((stanza, index) => {
-        setTimeout(() => {
-            stanza.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
-            stanza.style.opacity = '1';
-            stanza.style.transform = 'translateY(0)';
-        }, 200 + (index * 300));
-    });
-    
-    // Animate button appearing
+    // Wait a moment for transition, then show target screen
     setTimeout(() => {
-        button.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
-        button.style.opacity = '1';
-        button.style.transform = 'translateY(0)';
-    }, 1200);
-}
-
-// Initialize Screen 3 animations
-function initializeScreen3() {
-    const header = document.querySelector('#screen3 .gift-header');
-    const gallery = document.querySelector('#screen3 .flower-gallery');
-    const instruction = document.querySelector('#screen3 .instruction-text');
-    const button = document.querySelector('#screen3 .romantic-btn');
-    
-    // Reset animations
-    [header, gallery, instruction, button].forEach(element => {
-        if (element) {
-            element.style.opacity = '0';
-            element.style.transform = 'translateY(20px)';
+        const targetScreen = document.getElementById(`screen${screenNumber}`);
+        if (targetScreen) {
+            targetScreen.classList.add('active');
         }
-    });
-    
-    // Animate elements appearing sequentially
-    const elements = [header, gallery, instruction, button];
-    const delays = [200, 400, 600, 800];
-    
-    elements.forEach((element, index) => {
-        if (element) {
+        
+        // Update current screen
+        currentScreen = screenNumber;
+        
+        // Update body class for background transitions
+        document.body.className = '';
+        document.body.classList.add(`screen${screenNumber}-active`);
+        
+        // Update background animations
+        updateBackgroundAnimations(screenNumber);
+        
+        // Screen-specific animations
+        if (screenNumber === 1) {
+            // Reset and animate opening lines
             setTimeout(() => {
-                element.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
-                element.style.opacity = '1';
-                element.style.transform = 'translateY(0)';
-            }, delays[index]);
+                const lines = document.querySelectorAll('#screen1 .line');
+                lines.forEach((line, index) => {
+                    line.style.opacity = '0';
+                    line.style.transform = 'translateY(30px)';
+                    setTimeout(() => {
+                        line.classList.add('fade-in-up');
+                    }, (index + 1) * 200);
+                });
+                
+                // Animate button
+                const button = document.querySelector('#screen1 .romantic-btn');
+                if (button) {
+                    button.style.opacity = '0';
+                    button.style.transform = 'translateY(30px)';
+                    setTimeout(() => {
+                        button.classList.add('fade-in-up');
+                    }, 1000);
+                }
+            }, 100);
+            
+        } else if (screenNumber === 2) {
+            // Animate poem stanzas
+            setTimeout(() => {
+                const stanzas = document.querySelectorAll('#screen2 .stanza');
+                stanzas.forEach((stanza, index) => {
+                    stanza.style.opacity = '0';
+                    stanza.style.transform = 'translateY(20px)';
+                    stanza.style.animation = `fadeInStanza 1s ease-out ${index * 0.5}s forwards`;
+                });
+                
+                // Animate button
+                const button = document.querySelector('#screen2 .romantic-btn');
+                if (button) {
+                    button.style.opacity = '0';
+                    button.style.transform = 'translateY(30px)';
+                    setTimeout(() => {
+                        button.classList.add('fade-in-up');
+                    }, 800);
+                }
+            }, 100);
+            
+        } else if (screenNumber === 3) {
+            // Animate screen 3 elements
+            setTimeout(() => {
+                const buttons = document.querySelectorAll('#screen3 .romantic-btn');
+                buttons.forEach((button, index) => {
+                    button.style.opacity = '0';
+                    button.style.transform = 'translateY(30px)';
+                    setTimeout(() => {
+                        button.classList.add('fade-in-up');
+                    }, (index + 1) * 200);
+                });
+            }, 100);
         }
+    }, 100);
+}
+
+// Background animation controls
+function updateBackgroundAnimations(screenNumber) {
+    const screen1Bg = document.querySelectorAll('.screen1-bg');
+    const screen2Bg = document.querySelectorAll('.screen2-bg');
+    const screen3Bg = document.querySelectorAll('.screen3-bg');
+    
+    // Hide all backgrounds
+    screen1Bg.forEach(el => el.style.opacity = '0');
+    screen2Bg.forEach(el => el.style.opacity = '0');
+    screen3Bg.forEach(el => el.style.opacity = '0');
+    
+    // Show appropriate background
+    switch(screenNumber) {
+        case 1:
+            screen1Bg.forEach(el => el.style.opacity = '1');
+            break;
+        case 2:
+            screen2Bg.forEach(el => el.style.opacity = '1');
+            break;
+        case 3:
+            screen3Bg.forEach(el => el.style.opacity = '1');
+            break;
+    }
+}
+
+// Message modal functions
+function openMsgModal() {
+    const modal = document.getElementById('msg-modal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        
+        // Focus on textarea
+        const textarea = document.getElementById('msg-text');
+        if (textarea) {
+            setTimeout(() => textarea.focus(), 100);
+        }
+        
+        // Load messages
+        loadMessages();
+    }
+}
+
+function closeMsgModal() {
+    const modal = document.getElementById('msg-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+        
+        // Clear textarea
+        const textarea = document.getElementById('msg-text');
+        const counter = document.getElementById('msg-count');
+        if (textarea) textarea.value = '';
+        if (counter) counter.textContent = '0';
+    }
+}
+
+// FIXED Message saving function
+function saveMsg() {
+    const textarea = document.getElementById('msg-text');
+    if (!textarea) {
+        console.error('Message textarea not found');
+        return;
+    }
+    
+    const messageText = textarea.value.trim();
+    if (!messageText) {
+        showNotification('Please write a message first! 💕', 'warning');
+        return;
+    }
+    
+    // Create message object
+    const message = {
+        id: Date.now(),
+        text: messageText,
+        timestamp: new Date().toLocaleString(),
+        date: new Date()
+    };
+    
+    // Add to messages array
+    messages.unshift(message); // Add to beginning of array
+    
+    console.log('Message saved:', message);
+    console.log('Total messages:', messages.length);
+    
+    // Clear textarea
+    textarea.value = '';
+    const counter = document.getElementById('msg-count');
+    if (counter) counter.textContent = '0';
+    
+    // Reload messages display
+    loadMessages();
+    
+    // Show success notification
+    showNotification('Message sent! (in a nonchalant way)', 'success');
+}
+
+function loadMessages() {
+    const msgList = document.getElementById('msg-list');
+    if (!msgList) return;
+    
+    // Clear existing messages
+    msgList.innerHTML = '';
+    
+    if (messages.length === 0) {
+        msgList.innerHTML = '<p style="text-align: center; color: #666; font-style: italic; padding: 20px;">No messages yet...</p>';
+        return;
+    }
+    
+    // Create message elements
+    messages.forEach(message => {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'msg-item';
+        msgDiv.innerHTML = `
+            <div class="msg-content">${escapeHtml(message.text)}</div>
+            <div class="msg-meta">
+                <span>${message.timestamp}</span>
+                <button class="msg-delete" onclick="deleteMsg(${message.id})">Delete</button>
+            </div>
+        `;
+        msgList.appendChild(msgDiv);
     });
 }
 
-// Add subtle hover effects to flower placeholders
-document.addEventListener('DOMContentLoaded', function() {
-    const flowerPlaceholders = document.querySelectorAll('.flower-placeholder');
+function deleteMsg(messageId) {
+    console.log('Deleting message:', messageId);
     
-    flowerPlaceholders.forEach(placeholder => {
-        placeholder.addEventListener('mouseenter', function() {
-            if (!isTransitioning) {
-                this.style.transform = 'translateY(-5px) scale(1.02)';
-            }
-        });
-        
-        placeholder.addEventListener('mouseleave', function() {
-            if (!isTransitioning) {
-                this.style.transform = 'translateY(0) scale(1)';
-            }
-        });
-    });
-});
+    // Remove message from array
+    messages = messages.filter(msg => msg.id !== messageId);
+    
+    // Reload messages display
+    loadMessages();
+    
+    // Show notification
+    showNotification('Message deleted! 💔', 'info');
+}
 
-// Add smooth button hover effects
-document.addEventListener('DOMContentLoaded', function() {
-    const buttons = document.querySelectorAll('.romantic-btn');
+function showNotification(message, type = 'success') {
+    const notification = document.getElementById('success-notification');
+    if (!notification) return;
     
-    buttons.forEach(button => {
-        button.addEventListener('mouseenter', function() {
-            if (!isTransitioning && this.style.opacity === '1') {
-                this.style.transform = 'translateY(-2px) scale(1.05)';
-            }
-        });
-        
-        button.addEventListener('mouseleave', function() {
-            if (!isTransitioning && this.style.opacity === '1') {
-                this.style.transform = 'translateY(0) scale(1)';
-            }
-        });
-        
-        button.addEventListener('mousedown', function() {
-            if (!isTransitioning && this.style.opacity === '1') {
-                this.style.transform = 'translateY(1px) scale(1.02)';
-            }
-        });
-        
-        button.addEventListener('mouseup', function() {
-            if (!isTransitioning && this.style.opacity === '1') {
-                this.style.transform = 'translateY(-2px) scale(1.05)';
-            }
-        });
-    });
-});
+    // Update notification content
+    const textElement = notification.querySelector('.notification-text');
+    const iconElement = notification.querySelector('.notification-icon');
+    
+    if (textElement) textElement.textContent = message;
+    
+    // Update icon and styling based on type
+    if (iconElement) {
+        switch(type) {
+            case 'success':
+                iconElement.textContent = ':D';
+                notification.style.background = 'linear-gradient(135deg, #00b894, #00a085)';
+                break;
+            case 'warning':
+                iconElement.textContent = '⚠️';
+                notification.style.background = 'linear-gradient(135deg, #fdcb6e, #e17055)';
+                break;
+            case 'info':
+                iconElement.textContent = '💔';
+                notification.style.background = 'linear-gradient(135deg, #74b9ff, #0984e3)';
+                break;
+            default:
+                iconElement.textContent = ':)';
+                notification.style.background = 'linear-gradient(135deg, #00b894, #00a085)';
+        }
+    }
+    
+    // Show notification
+    notification.classList.remove('hidden');
+    
+    // Hide after 3 seconds
+    setTimeout(() => {
+        notification.classList.add('hidden');
+    }, 3000);
+}
 
-// Keyboard navigation support
-document.addEventListener('keydown', function(event) {
-    if (isTransitioning) return;
+// Utility function to escape HTML
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', function(e) {
+    // Don't interfere when modal is open
+    const modal = document.getElementById('msg-modal');
+    if (modal && !modal.classList.contains('hidden')) {
+        return;
+    }
     
-    switch(event.key) {
+    switch(e.key) {
         case 'ArrowRight':
         case ' ':
-        case 'Enter':
+            e.preventDefault();
             if (currentScreen < 3) {
                 showScreen(currentScreen + 1);
             }
             break;
         case 'ArrowLeft':
+            e.preventDefault();
             if (currentScreen > 1) {
                 showScreen(currentScreen - 1);
             }
             break;
         case 'Home':
+            e.preventDefault();
             showScreen(1);
+            break;
+        case 'End':
+            e.preventDefault();
+            showScreen(3);
             break;
     }
 });
 
-// Add a gentle parallax effect to the animated elements
-let mouseEffectActive = false;
-document.addEventListener('mousemove', function(event) {
-    if (mouseEffectActive || isTransitioning) return;
-    
-    mouseEffectActive = true;
-    setTimeout(() => {
-        mouseEffectActive = false;
-    }, 50);
-    
-    const mouseX = event.clientX / window.innerWidth;
-    const mouseY = event.clientY / window.innerHeight;
-    
-    // Apply subtle parallax to animated elements
-    const hearts = document.querySelectorAll('.heart, .celebration-heart');
-    const flowers = document.querySelectorAll('.flower, .celebration-flower');
-    const petals = document.querySelectorAll('.petal, .drift-petal');
-    
-    const offsetMultiplier = 5;
-    const offsetX = (mouseX - 0.5) * offsetMultiplier;
-    const offsetY = (mouseY - 0.5) * offsetMultiplier;
-    
-    hearts.forEach(heart => {
-        heart.style.transform += ` translate(${offsetX * 0.5}px, ${offsetY * 0.3}px)`;
-    });
-    
-    flowers.forEach(flower => {
-        flower.style.transform += ` translate(${offsetX * 0.3}px, ${offsetY * 0.5}px)`;
-    });
-    
-    petals.forEach(petal => {
-        petal.style.transform += ` translate(${offsetX * 0.7}px, ${offsetY * 0.4}px)`;
-    });
+// Touch/swipe support for mobile
+let touchStartX = null;
+let touchStartY = null;
+
+document.addEventListener('touchstart', function(e) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
 });
 
-// Initialize background animations and screen on load
-document.addEventListener('DOMContentLoaded', function() {
-    // Set initial body class
-    updateBodyClass(1);
+document.addEventListener('touchend', function(e) {
+    if (!touchStartX || !touchStartY) return;
     
-    // Add staggered animation delays to create more natural movement
-    const hearts = document.querySelectorAll('.heart');
-    hearts.forEach((heart, index) => {
-        const delay = Math.random() * 5; // Random delay up to 5 seconds
-        heart.style.animationDelay = `${delay}s`;
-    });
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
     
-    const petals = document.querySelectorAll('.petal, .drift-petal');
-    petals.forEach((petal, index) => {
-        const delay = Math.random() * 8; // Random delay up to 8 seconds
-        petal.style.animationDelay = `${delay}s`;
-    });
+    const deltaX = touchStartX - touchEndX;
+    const deltaY = touchStartY - touchEndY;
     
-    const flowers = document.querySelectorAll('.flower');
-    flowers.forEach((flower, index) => {
-        const delay = Math.random() * 10; // Random delay up to 10 seconds
-        flower.style.animationDelay = `${delay}s`;
-    });
+    // Check if it's a horizontal swipe (not vertical scroll)
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+        // Don't interfere when modal is open
+        const modal = document.getElementById('msg-modal');
+        if (modal && !modal.classList.contains('hidden')) {
+            return;
+        }
+        
+        if (deltaX > 0 && currentScreen < 3) {
+            // Swipe left (next screen)
+            showScreen(currentScreen + 1);
+        } else if (deltaX < 0 && currentScreen > 1) {
+            // Swipe right (previous screen)
+            showScreen(currentScreen - 1);
+        }
+    }
     
-    const celebrationHearts = document.querySelectorAll('.celebration-heart');
-    celebrationHearts.forEach((heart, index) => {
-        const delay = Math.random() * 3; // Random delay up to 3 seconds
-        heart.style.animationDelay = `${delay}s`;
-    });
-    
-    const celebrationFlowers = document.querySelectorAll('.celebration-flower');
-    celebrationFlowers.forEach((flower, index) => {
-        const delay = Math.random() * 4; // Random delay up to 4 seconds
-        flower.style.animationDelay = `${delay}s`;
-    });
+    touchStartX = null;
+    touchStartY = null;
 });
 
-// Smooth scrolling for mobile devices
-document.addEventListener('touchstart', function() {}, {passive: true});
-document.addEventListener('touchmove', function() {}, {passive: true});
-
-// Performance optimization: pause animations when tab is not visible
-document.addEventListener('visibilitychange', function() {
-    const animatedElements = document.querySelectorAll('.heart, .petal, .flower, .drift-petal, .celebration-heart, .celebration-flower');
-    
-    if (document.hidden) {
-        // Pause animations
-        animatedElements.forEach(element => {
-            element.style.animationPlayState = 'paused';
-        });
-    } else {
-        // Resume animations
-        animatedElements.forEach(element => {
-            element.style.animationPlayState = 'running';
-        });
+// Enhanced modal interaction
+document.addEventListener('click', function(e) {
+    // Close modal when clicking backdrop
+    if (e.target.classList.contains('msg-backdrop')) {
+        closeMsgModal();
     }
 });
 
-// Add resize handler for responsive animation adjustments
-window.addEventListener('resize', function() {
-    // Adjust animation elements for mobile
-    if (window.innerWidth <= 768) {
-        const animatedElements = document.querySelectorAll('.heart, .petal, .flower, .drift-petal');
-        animatedElements.forEach(element => {
-            element.style.transform = 'scale(0.8)';
-        });
-    } else if (window.innerWidth <= 480) {
-        const animatedElements = document.querySelectorAll('.heart, .petal, .flower, .drift-petal');
-        animatedElements.forEach(element => {
-            element.style.transform = 'scale(0.6)';
-        });
-    } else {
-        const animatedElements = document.querySelectorAll('.heart, .petal, .flower, .drift-petal');
-        animatedElements.forEach(element => {
-            element.style.transform = 'scale(1)';
-        });
+// Add smooth scrolling for message list
+function smoothScroll() {
+    const msgList = document.getElementById('msg-list');
+    if (msgList && msgList.scrollHeight > msgList.clientHeight) {
+        msgList.scrollTop = 0; // Scroll to top to show newest messages
     }
-});
+}
