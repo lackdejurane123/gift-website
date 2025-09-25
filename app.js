@@ -16,8 +16,9 @@ function saveAll(list) {
 // Single source of truth - always from localStorage
 let messages = loadAll();
 
-// Initialize the application
+// Initialize EmailJS with your public key
 document.addEventListener('DOMContentLoaded', function() {
+    emailjs.init('o6Fa8y7v6sLcJA7zY'); 
     console.log('Website initialized!');
 
     // Load messages from storage on startup
@@ -199,7 +200,8 @@ function closeMsgModal() {
 }
 
 // UNIFIED Message saving function
-function saveMsg() {
+// Enhanced saveMsg function that saves locally AND emails to you
+async function saveMsg() {
     const textarea = document.getElementById('msg-text');
     if (!textarea) {
         console.error('Message textarea not found');
@@ -208,7 +210,7 @@ function saveMsg() {
 
     const messageText = textarea.value.trim();
     if (!messageText) {
-        showNotification('Please write a message first! 💕', 'warning');
+        showNotification('Please write a message first! ', 'warning');
         return;
     }
 
@@ -220,24 +222,35 @@ function saveMsg() {
         timestamp: new Date().toLocaleString()
     };
 
-    // Reload from storage, add new message, save back
+    // 1. Save locally (for her to see her messages)
     messages = loadAll();
-    messages.unshift(message); // Add to beginning of array
+    messages.unshift(message);
     saveAll(messages);
 
-    console.log('Message saved:', message);
-    console.log('Total messages:', messages.length);
-
-    // Clear textarea
+    // Clear textarea and update display
     textarea.value = '';
     const counter = document.getElementById('msg-count');
     if (counter) counter.textContent = '0';
-
-    // Update display
     displayMessages();
 
-    // Show success notification
-    showNotification('Message sent! (in a nonchalant way)', 'success');
+    // 2. Send email to you via EmailJS
+    try {
+        // EmailJS configuration (you'll replace these with your actual IDs)
+        await emailjs.send('service_fp56rrd', 'template_hrq14j6', {
+            from_name: 'Sandhya', // or get from a name field
+            message: messageText,
+            timestamp: message.ts,
+            to_email: 'your-email@example.com' // Your email address
+        });
+
+        console.log('Message saved locally and emailed successfully!');
+        showNotification('Message sent! (in a nonchalant way)', 'success');
+
+    } catch (error) {
+        console.error('Email sending failed:', error);
+        // Still show success because local save worked
+        showNotification('Message saved! 💕', 'success');
+    }
 }
 
 // UNIFIED display function (replaces loadMessages)
