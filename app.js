@@ -433,4 +433,3 @@ function smoothScroll() {
         msgList.scrollTop = 0; // Scroll to top to show newest messages
     }
 }
-Asset 2 of 2
