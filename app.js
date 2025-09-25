@@ -1,36 +1,50 @@
 // Global variables
 let currentScreen = 1;
-let messages = []; // Store messages in memory instead of localStorage
+
+// === Persistent message store (unified) ===
+const STORAGE_KEY = location.pathname.replace(/\/index\.html$/, '/') + ':sweetMessages';
+
+function loadAll() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch { return []; }
+}
+
+function saveAll(list) { 
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); 
+}
+
+// Single source of truth - always from localStorage
+let messages = loadAll();
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Website initialized!');
-    
+
+    // Load messages from storage on startup
+    messages = loadAll();
+
     // Set initial screen
     setTimeout(() => {
         showScreen(1);
     }, 100);
-    
+
     // Initialize message counter
     const msgText = document.getElementById('msg-text');
     const msgCount = document.getElementById('msg-count');
-    
+
     if (msgText && msgCount) {
         msgText.addEventListener('input', function() {
             msgCount.textContent = this.value.length;
         });
     }
-    
-    // Load existing messages
-    loadMessages();
-    
+
     // Close modal with Escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeMsgModal();
         }
     });
-    
+
     // Add welcome effect
     setTimeout(() => {
         showNotification('TADAAAAAAAA', 'success');
@@ -41,32 +55,32 @@ document.addEventListener('DOMContentLoaded', function() {
 function showScreen(screenNumber) {
     // Prevent invalid screen numbers
     if (screenNumber < 1 || screenNumber > 3) return;
-    
+
     console.log(`Switching to screen ${screenNumber}`);
-    
+
     // Hide ALL screens first - this fixes the overlap issue
     const allScreens = document.querySelectorAll('.screen');
     allScreens.forEach(screen => {
         screen.classList.remove('active');
     });
-    
+
     // Wait a moment for transition, then show target screen
     setTimeout(() => {
         const targetScreen = document.getElementById(`screen${screenNumber}`);
         if (targetScreen) {
             targetScreen.classList.add('active');
         }
-        
+
         // Update current screen
         currentScreen = screenNumber;
-        
+
         // Update body class for background transitions
         document.body.className = '';
         document.body.classList.add(`screen${screenNumber}-active`);
-        
+
         // Update background animations
         updateBackgroundAnimations(screenNumber);
-        
+
         // Screen-specific animations
         if (screenNumber === 1) {
             // Reset and animate opening lines
@@ -79,7 +93,7 @@ function showScreen(screenNumber) {
                         line.classList.add('fade-in-up');
                     }, (index + 1) * 200);
                 });
-                
+
                 // Animate button
                 const button = document.querySelector('#screen1 .romantic-btn');
                 if (button) {
@@ -90,7 +104,7 @@ function showScreen(screenNumber) {
                     }, 1000);
                 }
             }, 100);
-            
+
         } else if (screenNumber === 2) {
             // Animate poem stanzas
             setTimeout(() => {
@@ -100,7 +114,7 @@ function showScreen(screenNumber) {
                     stanza.style.transform = 'translateY(20px)';
                     stanza.style.animation = `fadeInStanza 1s ease-out ${index * 0.5}s forwards`;
                 });
-                
+
                 // Animate button
                 const button = document.querySelector('#screen2 .romantic-btn');
                 if (button) {
@@ -111,7 +125,7 @@ function showScreen(screenNumber) {
                     }, 800);
                 }
             }, 100);
-            
+
         } else if (screenNumber === 3) {
             // Animate screen 3 elements
             setTimeout(() => {
@@ -133,12 +147,12 @@ function updateBackgroundAnimations(screenNumber) {
     const screen1Bg = document.querySelectorAll('.screen1-bg');
     const screen2Bg = document.querySelectorAll('.screen2-bg');
     const screen3Bg = document.querySelectorAll('.screen3-bg');
-    
+
     // Hide all backgrounds
     screen1Bg.forEach(el => el.style.opacity = '0');
     screen2Bg.forEach(el => el.style.opacity = '0');
     screen3Bg.forEach(el => el.style.opacity = '0');
-    
+
     // Show appropriate background
     switch(screenNumber) {
         case 1:
@@ -158,15 +172,16 @@ function openMsgModal() {
     const modal = document.getElementById('msg-modal');
     if (modal) {
         modal.classList.remove('hidden');
-        
+
         // Focus on textarea
         const textarea = document.getElementById('msg-text');
         if (textarea) {
             setTimeout(() => textarea.focus(), 100);
         }
-        
-        // Load messages
-        loadMessages();
+
+        // Always reload from storage when opening modal
+        messages = loadAll();
+        displayMessages();
     }
 }
 
@@ -174,7 +189,7 @@ function closeMsgModal() {
     const modal = document.getElementById('msg-modal');
     if (modal) {
         modal.classList.add('hidden');
-        
+
         // Clear textarea
         const textarea = document.getElementById('msg-text');
         const counter = document.getElementById('msg-count');
@@ -183,123 +198,144 @@ function closeMsgModal() {
     }
 }
 
-// FIXED Message saving function
+// UNIFIED Message saving function
 function saveMsg() {
     const textarea = document.getElementById('msg-text');
     if (!textarea) {
         console.error('Message textarea not found');
         return;
     }
-    
+
     const messageText = textarea.value.trim();
     if (!messageText) {
         showNotification('Please write a message first! 💕', 'warning');
         return;
     }
-    
+
     // Create message object
     const message = {
         id: Date.now(),
         text: messageText,
-        timestamp: new Date().toLocaleString(),
-        date: new Date()
+        ts: new Date().toLocaleString(),
+        timestamp: new Date().toLocaleString()
     };
-    
-    // Add to messages array
+
+    // Reload from storage, add new message, save back
+    messages = loadAll();
     messages.unshift(message); // Add to beginning of array
-    
+    saveAll(messages);
+
     console.log('Message saved:', message);
     console.log('Total messages:', messages.length);
-    
+
     // Clear textarea
     textarea.value = '';
     const counter = document.getElementById('msg-count');
     if (counter) counter.textContent = '0';
-    
-    // Reload messages display
-    loadMessages();
-    
+
+    // Update display
+    displayMessages();
+
     // Show success notification
     showNotification('Message sent! (in a nonchalant way)', 'success');
 }
 
-function loadMessages() {
+// UNIFIED display function (replaces loadMessages)
+function displayMessages() {
     const msgList = document.getElementById('msg-list');
     if (!msgList) return;
-    
-    // Clear existing messages
-    msgList.innerHTML = '';
-    
+
+    // Always work from current messages array
     if (messages.length === 0) {
-        msgList.innerHTML = '<p style="text-align: center; color: #666; font-style: italic; padding: 20px;">No messages yet...</p>';
+        msgList.innerHTML = '<p class="msg-empty">No messages yet. Write the first one! ✨</p>';
         return;
     }
-    
-    // Create message elements
-    messages.forEach(message => {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = 'msg-item';
-        msgDiv.innerHTML = `
-            <div class="msg-content">${escapeHtml(message.text)}</div>
-            <div class="msg-meta">
-                <span>${message.timestamp}</span>
-                <button class="msg-delete" onclick="deleteMsg(${message.id})">Delete</button>
-            </div>
-        `;
-        msgList.appendChild(msgDiv);
-    });
+
+    msgList.innerHTML = '<h4>Your Messages:</h4>' + messages.map(m => `
+        <div class="msg-item">
+            <div class="msg-text">${String(m.text)
+                .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+                .replace(/"/g,'&quot;').replace(/'/g,'&#039;')}</div>
+            <div class="msg-timestamp">${m.ts || m.timestamp}</div>
+            <button class="msg-delete" type="button" onclick="deleteMsg(${m.id})" title="Delete">×</button>
+        </div>
+    `).join('');
 }
 
+// UNIFIED delete function
 function deleteMsg(messageId) {
     console.log('Deleting message:', messageId);
-    
-    // Remove message from array
+
+    // Reload from storage, remove message, save back
+    messages = loadAll();
     messages = messages.filter(msg => msg.id !== messageId);
-    
-    // Reload messages display
-    loadMessages();
-    
+    saveAll(messages);
+
+    // Update display
+    displayMessages();
+
     // Show notification
     showNotification('Message deleted! 💔', 'info');
 }
 
+// Backup alias for HTML compatibility
+window.deleteMessage = deleteMsg;
+
 function showNotification(message, type = 'success') {
     const notification = document.getElementById('success-notification');
-    if (!notification) return;
-    
-    // Update notification content
-    const textElement = notification.querySelector('.notification-text');
-    const iconElement = notification.querySelector('.notification-icon');
-    
+    if (!notification) {
+        // Create notification if it doesn't exist
+        const notif = document.createElement('div');
+        notif.id = 'success-notification';
+        notif.className = 'hidden';
+        notif.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 25px;
+            color: white;
+            font-weight: 500;
+            z-index: 1001;
+            transition: all 0.3s ease;
+        `;
+        notif.innerHTML = '<span class="notification-icon"></span> <span class="notification-text"></span>';
+        document.body.appendChild(notif);
+    }
+
+    const notification2 = document.getElementById('success-notification');
+    const textElement = notification2.querySelector('.notification-text');
+    const iconElement = notification2.querySelector('.notification-icon');
+
     if (textElement) textElement.textContent = message;
-    
+
     // Update icon and styling based on type
     if (iconElement) {
         switch(type) {
             case 'success':
                 iconElement.textContent = ':D';
-                notification.style.background = 'linear-gradient(135deg, #00b894, #00a085)';
+                notification2.style.background = 'linear-gradient(135deg, #00b894, #00a085)';
                 break;
             case 'warning':
                 iconElement.textContent = '⚠️';
-                notification.style.background = 'linear-gradient(135deg, #fdcb6e, #e17055)';
+                notification2.style.background = 'linear-gradient(135deg, #fdcb6e, #e17055)';
                 break;
             case 'info':
                 iconElement.textContent = '💔';
-                notification.style.background = 'linear-gradient(135deg, #74b9ff, #0984e3)';
+                notification2.style.background = 'linear-gradient(135deg, #74b9ff, #0984e3)';
                 break;
             default:
                 iconElement.textContent = ':)';
-                notification.style.background = 'linear-gradient(135deg, #00b894, #00a085)';
+                notification2.style.background = 'linear-gradient(135deg, #00b894, #00a085)';
         }
     }
-    
+
     // Show notification
-    notification.classList.remove('hidden');
-    
+    notification2.classList.remove('hidden');
+
     // Hide after 3 seconds
     setTimeout(() => {
-        notification.classList.add('hidden');
+        notification2.classList.add('hidden');
     }, 3000);
 }
 
@@ -317,7 +353,7 @@ document.addEventListener('keydown', function(e) {
     if (modal && !modal.classList.contains('hidden')) {
         return;
     }
-    
+
     switch(e.key) {
         case 'ArrowRight':
         case ' ':
@@ -354,13 +390,13 @@ document.addEventListener('touchstart', function(e) {
 
 document.addEventListener('touchend', function(e) {
     if (!touchStartX || !touchStartY) return;
-    
+
     const touchEndX = e.changedTouches[0].clientX;
     const touchEndY = e.changedTouches[0].clientY;
-    
+
     const deltaX = touchStartX - touchEndX;
     const deltaY = touchStartY - touchEndY;
-    
+
     // Check if it's a horizontal swipe (not vertical scroll)
     if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
         // Don't interfere when modal is open
@@ -368,7 +404,7 @@ document.addEventListener('touchend', function(e) {
         if (modal && !modal.classList.contains('hidden')) {
             return;
         }
-        
+
         if (deltaX > 0 && currentScreen < 3) {
             // Swipe left (next screen)
             showScreen(currentScreen + 1);
@@ -377,7 +413,7 @@ document.addEventListener('touchend', function(e) {
             showScreen(currentScreen - 1);
         }
     }
-    
+
     touchStartX = null;
     touchStartY = null;
 });
@@ -397,65 +433,4 @@ function smoothScroll() {
         msgList.scrollTop = 0; // Scroll to top to show newest messages
     }
 }
-
-// === Persistent message store (for /gift-website/) ===
-const STORAGE_KEY = location.pathname.replace(/\/index\.html$/, '/') + ':sweetMessages';
-
-function loadAll() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-  catch { return []; }
-}
-function saveAll(list) { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
-
-let messages = loadAll();
-
-function displayMessages() {
-  const listEl = document.getElementById('msg-list');
-  if (!listEl) return;
-  if (!messages.length) {
-    listEl.innerHTML = '<p class="msg-empty">No messages yet. Write the first one! ✨</p>';
-    return;
-  }
-  listEl.innerHTML = '<h4>Your Messages:</h4>' + messages.map(m => `
-    <div class="msg-item">
-      <div class="msg-text">${String(m.text)
-        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-        .replace(/\"/g,'&quot;').replace(/'/g,'&#039;')}</div>
-      <div class="msg-timestamp">${m.ts}</div>
-      <button class="msg-delete" type="button" onclick="deleteMessage(${m.id})" title="Delete">×</button>
-    </div>
-  `).join('');
-}
-
-function saveMsg() {
-  const ta = document.getElementById('msg-text');
-  if (!ta) return;
-  const text = ta.value.trim();
-  if (!text) return;
-  messages.unshift({ id: Date.now(), text, ts: new Date().toLocaleString() });
-  saveAll(messages);
-  ta.value = '';
-  const cnt = document.getElementById('msg-count');
-  if (cnt) cnt.textContent = '0';
-  displayMessages();
-}
-
-function deleteMessage(id) {
-  messages = messages.filter(m => m.id !== id);
-  saveAll(messages);
-  displayMessages();
-}
-
-// First render after page load
-document.addEventListener('DOMContentLoaded', () => {
-  messages = loadAll();
-  displayMessages();
-});
-
-// Ensure list repaints when modal opens
-const _open = window.openMsgModal;
-window.openMsgModal = function() {
-  if (typeof _open === 'function') _open();
-  messages = loadAll();
-  setTimeout(displayMessages, 50);
-};
+Asset 2 of 2
