@@ -240,7 +240,7 @@ async function saveMsg() {
             from_name: 'Sandhya', // or get from a name field
             message: messageText,
             timestamp: message.ts,
-            to_email: 'your-email@example.com' // Your email address
+            to_email: 'lackdejurane@gmail.com' // Your email address
         });
 
         console.log('Message saved locally and emailed successfully!');
