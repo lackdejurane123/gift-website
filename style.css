@@ -1552,3 +1552,68 @@ body.screen3-active .screen2-bg {
         margin: 5px 0;
     }
 }
+
+/* Message text color fixes */
+#msg-list h4 {
+    color: #6b5b73 !important; /* "Your Messages:" header - romantic purple */
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.msg-text {
+    color: #5d4e75 !important; /* Message content - darker purple */
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.msg-timestamp {
+    color: #8b7f95 !important; /* Timestamp - softer purple */
+    font-size: 12px;
+    font-style: italic;
+    opacity: 0.8;
+}
+
+.msg-item {
+    background: linear-gradient(135deg, rgba(248, 246, 243, 0.8) 0%, rgba(240, 235, 230, 0.8) 100%) !important;
+    border-left: 4px solid #e8b4b8 !important;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
+    position: relative;
+}
+
+.msg-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(232, 180, 184, 0.3);
+}
+
+/* Delete button styling */
+.msg-delete {
+    background: rgba(232, 180, 184, 0.7) !important;
+    color: white !important;
+    border: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 12px;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+}
+
+.msg-delete:hover {
+    background: #e8b4b8 !important;
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.msg-empty {
+    color: rgba(107, 91, 115, 0.7) !important; /* "No messages yet" text */
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+}
