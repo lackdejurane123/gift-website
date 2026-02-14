@@ -1088,11 +1088,12 @@ body {
 
 /* Screen 2 Styles */
 .poem-container {
-    margin-bottom: 40px;
+    margin-bottom: 30px;
+    max-height: 75vh;     /* keep poem within screen */
 }
 
 .stanza {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     opacity: 0;
     animation: fadeInStanza 1s ease-out forwards;
 }
@@ -1103,10 +1104,11 @@ body {
 
 .poem-line {
     font-family: 'Playfair Display', serif;
-    font-size: 20px;
+    font-size: 2.3vh;     /* responsive to screen height */
     color: #4a154b;
-    margin-bottom: 12px;
+    margin-bottom: 8px;   /* tighter line spacing */
     font-style: italic;
+    line-height: 1.35;    /* improves vertical fit */
 }
 
 @keyframes fadeInStanza {
