@@ -1088,9 +1088,12 @@ body {
 
 /* Screen 2 Styles */
 .poem-container {
-    margin-bottom: 30px;
-    max-height: 75vh;     /* keep poem within screen */
+    margin-bottom: 20px;
+    max-height: 60vh;   /* was 75vh */
+    overflow-y: auto;
 }
+
+
 
 .stanza {
     margin-bottom: 20px;
